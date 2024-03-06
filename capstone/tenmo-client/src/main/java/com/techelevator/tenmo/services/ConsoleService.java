@@ -6,7 +6,7 @@ import com.techelevator.tenmo.model.UserCredentials;
 import java.math.BigDecimal;
 import java.util.Scanner;
 
-public class ConsoleService {
+public class  ConsoleService {
 
     private final Scanner scanner = new Scanner(System.in);
 
