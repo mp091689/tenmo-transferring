@@ -3,9 +3,9 @@ package com.techelevator.tenmo.controller;
 import com.techelevator.tenmo.model.Transfer;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @PreAuthorize("isAuthorized()")
 @RestController
@@ -17,5 +17,10 @@ public class TransferController {
     public Transfer create(){
         Transfer newTransfer = null;
         return newTransfer;
+    }
+
+    @RequestMapping(path = "/transfers/{id}", method = RequestMethod.GET)
+    public boolean getById(@Valid @PathVariable int id){
+        return true;
     }
 }
