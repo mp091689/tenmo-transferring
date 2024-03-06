@@ -55,7 +55,10 @@ public class TransferController {
     public List<Transfer> getAll(){
     return transferDao.getAll();
     }
-
+    @RequestMapping(path = "transfers/pending", method = RequestMethod.GET)
+    public List<Transfer> getAllPending(){
+        return transferDao.getAllPending();
+    }
 
 
 }
