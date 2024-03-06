@@ -19,6 +19,10 @@ public class Transfer {
         this.amount = amount;
     }
 
+    public Transfer() {
+
+    }
+
     @Override
     public String toString() {
         return "\n--------------------------------------------" +
