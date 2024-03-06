@@ -7,7 +7,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
-@PreAuthorize("isAuthorized()")
+// We need something like this
+//@PreAuthorize("isAuthorized()")
 @RestController
 public class TransferController {
     private Transfer transfer;
