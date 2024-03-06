@@ -1,5 +1,6 @@
 package com.techelevator.tenmo.controller;
 
+import com.techelevator.tenmo.dao.TransferDao;
 import com.techelevator.tenmo.model.Transfer;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,6 +14,12 @@ import javax.validation.Valid;
 public class TransferController {
     private Transfer transfer;
 
+    private TransferDao transferDao;
+
+    public TransferController(TransferDao transferDao) {
+        this.transferDao = transferDao;
+    }
+
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping()
     public Transfer create(){
@@ -20,8 +27,14 @@ public class TransferController {
         return newTransfer;
     }
 
-    @RequestMapping(path = "/transfers/{id}", method = RequestMethod.GET)
+    @GetMapping(path = "/transfers/{id}")
     public boolean getById(@Valid @PathVariable int id){
+        return true;
+    }
+
+    @PutMapping("approve")
+    public boolean approve() {
+
         return true;
     }
 }
