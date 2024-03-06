@@ -43,8 +43,8 @@ public class TransferController {
     }
 
     @RequestMapping(path = "/transfers/{id}", method = RequestMethod.GET)
-    public Transfer getById(@PathVariable int id){
-        Transfer transfer = transferDao.getById(id);
+    public Transfer getById(@PathVariable int id, @RequestParam int userId){
+        Transfer transfer = transferDao.getById(id, userId);
         if (transfer != null) {
             return transfer;
         }
@@ -52,12 +52,12 @@ public class TransferController {
     }
 
     @RequestMapping(path = "/transfers", method = RequestMethod.GET)
-    public List<Transfer> getAll(){
-    return transferDao.getAll();
+    public List<Transfer> getAll(@RequestParam int userId){
+    return transferDao.getAll(userId);
     }
     @RequestMapping(path = "transfers/pending", method = RequestMethod.GET)
-    public List<Transfer> getAllPending(){
-        return transferDao.getAllPending();
+    public List<Transfer> getAllPending(int userId){
+        return transferDao.getAllPending(userId);
     }
 
 
