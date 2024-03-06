@@ -9,15 +9,14 @@ import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
+import java.util.List;
 
-// We need something like this
-//@PreAuthorize("isAuthorized()")
+@PreAuthorize("isAuthenticated()")
 @RestController
 public class TransferController {
-    private Transfer transfer;
-
     private TransferDao transferDao;
 
     public TransferController(TransferDao transferDao) {
@@ -43,13 +42,20 @@ public class TransferController {
         return newTransfer;
     }
 
-    @GetMapping(path = "/transfers/{id}")
-    public boolean getById(@Valid @PathVariable int id){
-        return true;
+    @RequestMapping(path = "/transfers/{id}", method = RequestMethod.GET)
+    public Transfer getById(@PathVariable int id){
+        Transfer transfer = transferDao.getById(id);
+        if (transfer != null) {
+            return transfer;
+        }
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Transfer not found.");
     }
 
-    @PutMapping("approve/{id}")
-    public boolean approve(@PathVariable int id, @RequestBody String status) {
-        return transferDao.approve(id, status);
+    @RequestMapping(path = "/transfers", method = RequestMethod.GET)
+    public List<Transfer> getAll(){
+    return transferDao.getAll();
     }
+
+
+
 }
