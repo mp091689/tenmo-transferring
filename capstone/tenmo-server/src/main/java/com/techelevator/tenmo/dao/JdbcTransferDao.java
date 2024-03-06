@@ -1,34 +1,51 @@
 package com.techelevator.tenmo.dao;
 
 import com.techelevator.tenmo.model.Transfer;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
 public class JdbcTransferDao implements TransferDao{
+    private final String TRANSFER_SELECT = "SELECT t.transfer_id, t.transfer_status_id, t.transfer_status_id, t.account_from, t.account_to, t.amount FROM transfer AS t";
     @Override
-    public List<Transfer> getAll() {
+    public List<Transfer> getAll(int userId) {
+        //TODO: getAll
+        List<Transfer> transfers = new ArrayList<>();
+        String sql = TRANSFER_SELECT +
+                "JOIN account AS a ON a.account_id = t.account_from OR t.account_to" +
+                "JOIN tenmo_user AS tu ON tu.user_id = a.user_id " +
+                "WHERE user_id = ? ";
         return null;
     }
 
     @Override
-    public Transfer getById(int id) {
+    public Transfer getById(int id, int userId) {
+        //TODO: getById
         return null;
     }
 
     @Override
     public Transfer create(Transfer transfer) {
+        //TODO: create
         return null;
     }
 
     @Override
-    public List<Transfer> getAllPending() {
+    public List<Transfer> getAllPending(int userId) {
+        //TODO: getAllPending
         return null;
     }
 
     @Override
     public Boolean approve(int id, String status) {
+        //TODO: approve
         return null;
+    }
+
+    private Transfer mapRowsToTransfer(SqlRowSet results) {
+        Transfer transfer = new Transfer();
     }
 }
