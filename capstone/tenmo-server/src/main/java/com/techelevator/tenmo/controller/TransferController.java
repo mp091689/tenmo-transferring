@@ -32,9 +32,8 @@ public class TransferController {
         return true;
     }
 
-    @PutMapping("approve")
-    public boolean approve() {
-
-        return true;
+    @PutMapping("approve/{id}")
+    public boolean approve(@PathVariable int id, @RequestBody String status) {
+        return transferDao.approve(id, status);
     }
 }
