@@ -59,17 +59,18 @@ public class JdbcTransferDao implements TransferDao{
     @Override
     public Transfer create(Transfer transfer) {
         //TODO: create
-        Transfer newTransfer = new Transfer();
-        String sql = "INSERT INTO transfer (transfer_type_id, transfer_status_id, account_from, account_to, amount) VALUES (?, ?, ?, ?, ?) RETURNING transfer_id;";
-        try {
-            int newTransferId = jdbcTemplate.queryForObject(sql, int.class, transfer.getTypeId(), transfer.getStatusId(), transfer.getFromAccount(), transfer.getToAccount(), transfer.getAmount());
-            newTransfer = getById(newTransferId);
-        } catch (CannotGetJdbcConnectionException e) {
-        throw new DaoException("Unable to connect to server or database", e);
-        } catch (DataIntegrityViolationException e) {
-        throw new DaoException("Data integrity violation", e);
-    }
-        return newTransfer;
+//        Transfer newTransfer = new Transfer();
+//        String sql = "INSERT INTO transfer (transfer_type_id, transfer_status_id, account_from, account_to, amount) VALUES (?, ?, ?, ?, ?) RETURNING transfer_id;";
+//        try {
+//            int newTransferId = jdbcTemplate.queryForObject(sql, int.class, transfer.getTypeId(), transfer.getStatusId(), transfer.getFromAccount(), transfer.getToAccount(), transfer.getAmount());
+//            newTransfer = getById(newTransferId);
+//        } catch (CannotGetJdbcConnectionException e) {
+//        throw new DaoException("Unable to connect to server or database", e);
+//        } catch (DataIntegrityViolationException e) {
+//        throw new DaoException("Data integrity violation", e);
+//    }
+//        return newTransfer;
+        return null;
     }
 
     @Override
