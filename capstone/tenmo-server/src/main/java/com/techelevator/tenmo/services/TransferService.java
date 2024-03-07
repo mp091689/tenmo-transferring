@@ -59,8 +59,9 @@ public class TransferService {
                 foreignAccount.deposit(transfer.getAmount());
                 currentAccount.withdraw(transfer.getAmount());
                 transfer.setStatusId(2);
+            } else {
+                transfer.setStatusId(3);
             }
-            transfer.setStatusId(3);
         } else { // requesting
             transfer.setFromAccount(foreignAccount.getId());
             transfer.setToAccount(currentAccount.getId());
