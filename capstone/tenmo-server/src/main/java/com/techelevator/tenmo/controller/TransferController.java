@@ -39,7 +39,7 @@ public class TransferController {
         Transfer newTransfer = null;
         User user = userDao.getUserByUsername(principal.getName());
         try {
-            newTransfer = transferDao.create(transfer, user.getId());
+            newTransfer = transferDao.create(transfer, user.getId(), transfer.getTypeId());
         }
         catch (CannotGetJdbcConnectionException ex) {
             throw new DaoException("Connection error.", ex);

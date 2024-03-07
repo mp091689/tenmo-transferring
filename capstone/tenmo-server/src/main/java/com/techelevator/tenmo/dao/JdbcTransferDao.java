@@ -26,7 +26,7 @@ public class JdbcTransferDao implements TransferDao {
     public List<Transfer> getAll(int userId) {
         List<Transfer> transfers = new ArrayList<>();
         String sql = TRANSFER_SELECT +
-                "WHERE account_from IN (SELECT account_id FROM account WHERE user_id = ?) OR account_to IN (SELECT account_id FROM account WHERE user_id = ?)";
+                " WHERE account_from = (SELECT account_id FROM account WHERE user_id = ?) OR account_to = (SELECT account_id FROM account WHERE user_id = ?);";
         try {
             SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
             while (results.next()) {
@@ -43,7 +43,7 @@ public class JdbcTransferDao implements TransferDao {
     public Transfer getById(int id, int userId) {
         Transfer transfer = null;
         String sql = TRANSFER_SELECT +
-                "WHERE transfer_id = ?;";
+                " WHERE transfer_id = ?;";
         try {
             SqlRowSet results = jdbcTemplate.queryForRowSet(sql, id);
             if (results.next()) {
@@ -56,7 +56,7 @@ public class JdbcTransferDao implements TransferDao {
     }
 
     @Override
-    public Transfer create(Transfer transfer, int userId) {
+    public Transfer create(Transfer transfer, int userId, int transferType) {
         Transfer newTransfer;
         String sql = "INSERT INTO transfer (transfer_type_id, transfer_status_id, account_from, account_to, amount) VALUES (?, ?, ?, ?, ?) RETURNING transfer_id;";
         try {
@@ -74,7 +74,7 @@ public class JdbcTransferDao implements TransferDao {
     public List<Transfer> getAllPending(int userId) {
         List<Transfer> transfers = new ArrayList<>();
         String sql = TRANSFER_SELECT +
-                "WHERE account_from IN (SELECT account_id FROM account WHERE user_id = ?) OR account_to IN (SELECT account_id FROM account WHERE user_id = ?) AND transfer_status_id = 1;";
+                " WHERE account_from IN (SELECT account_id FROM account WHERE user_id = ?) OR account_to IN (SELECT account_id FROM account WHERE user_id = ?) AND transfer_status_id = 1;";
         try {
             SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
             while (results.next()) {
