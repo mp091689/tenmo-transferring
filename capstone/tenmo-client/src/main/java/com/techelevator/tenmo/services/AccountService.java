@@ -22,9 +22,7 @@ public class AccountService {
         this.authToken = authToken;
     }
 
-//    public BigDecimal getBalance(int id){
-//        return restTemplate.getForObject(API_BASE_URL + "accounts/" + id, BigDecimal.class);
-//    }
+
     public BigDecimal getBalance(AuthenticatedUser auth){
         BigDecimal balance = BigDecimal.valueOf(0);
         try {

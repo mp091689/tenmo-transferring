@@ -35,10 +35,11 @@ public class TransferController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("transfer")
-    public Transfer create(@Valid @RequestBody Transfer transfer){
+    public Transfer create(@Valid @RequestBody Transfer transfer, Principal principal){
         Transfer newTransfer = null;
+        User user = userDao.getUserByUsername(principal.getName());
         try {
-            newTransfer = transferDao.create(transfer);
+            newTransfer = transferDao.create(transfer, user.getId());
         }
         catch (CannotGetJdbcConnectionException ex) {
             throw new DaoException("Connection error.", ex);
