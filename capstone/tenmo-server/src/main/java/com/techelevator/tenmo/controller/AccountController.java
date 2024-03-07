@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 @RestController
 public class AccountController {
     private AccountDao accountDao;
-    
+
     @GetMapping("balance")
     public BigDecimal getBalance(@Valid @RequestParam int userId) {
         return accountDao.getBalance(userId);
