@@ -93,7 +93,7 @@ public class App {
         BigDecimal balance = BigDecimal.valueOf(0);
         balance = accountService.getBalance(currentUser);
         System.out.println("Your current account balance is: " + balance);
-		
+
 	}
 
 	private void viewTransferHistory() {

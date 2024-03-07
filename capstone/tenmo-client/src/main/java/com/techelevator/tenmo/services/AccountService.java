@@ -22,14 +22,14 @@ public class AccountService {
         this.authToken = authToken;
     }
 
-    public BigDecimal getBalance(AuthenticatedUser userId){
+//    public BigDecimal getBalance(int id){
+//        return restTemplate.getForObject(API_BASE_URL + "accounts/" + id, BigDecimal.class);
+//    }
+    public BigDecimal getBalance(AuthenticatedUser auth){
         BigDecimal balance = BigDecimal.valueOf(0);
         try {
-            ResponseEntity<Account> response = restTemplate.exchange(API_BASE_URL + "balance" + userId, HttpMethod.GET, makeAuthEntity(), Account.class);
-            Account account = response.getBody();
-            if (account != null) {
-                balance = account.getBalance();
-            }
+            ResponseEntity<BigDecimal> response = restTemplate.exchange(API_BASE_URL + "balance/" + auth.getUser().getId(), HttpMethod.GET, makeAuthEntity(), BigDecimal.class);
+            balance = response.getBody();
         }
         catch (RestClientResponseException | ResourceAccessException e) {
             BasicLogger.log(e.getMessage());

@@ -23,11 +23,11 @@ public class JdbcAccountDao implements AccountDao{
         BigDecimal balance = BigDecimal.valueOf(0);
         String sql = "SELECT balance FROM account AS a " +
                 "JOIN tenmo_user AS tu ON tu.user_id = a.user_id " +
-                "WHERE user_id = ?";
+                "WHERE a.user_id = ?";
         try {
             SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userID);
             if (results.next()) {
-                balance = (BigDecimal) results;
+                balance = results.getBigDecimal("balance");
             }
         }
         catch (CannotGetJdbcConnectionException e) {
