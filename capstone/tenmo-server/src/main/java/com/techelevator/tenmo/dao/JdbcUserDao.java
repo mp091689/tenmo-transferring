@@ -93,6 +93,22 @@ public class JdbcUserDao implements UserDao {
         return newUser;
     }
 
+    @Override
+    public List<User> allUsernameId() {
+        List<User> users = new ArrayList<>();
+        String sql = "SELECT user_id, username FROM tenmo_user";
+        try {
+            SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
+            while (results.next()) {
+                User user = mapRowToUser(results);
+                users.add(user);
+            }
+        } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Unable to connect to server or database", e);
+        }
+        return users;
+    }
+
     private User mapRowToUser(SqlRowSet rs) {
         User user = new User();
         user.setId(rs.getInt("user_id"));
@@ -102,4 +118,6 @@ public class JdbcUserDao implements UserDao {
         user.setAuthorities("USER");
         return user;
     }
+
+
 }
