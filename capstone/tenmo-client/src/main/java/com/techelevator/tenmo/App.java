@@ -102,9 +102,19 @@ public class App {
 	}
 
 	private void viewTransferHistory() {
-        List<Transfer> transferList;
-        transferList = transferService.getAll();
-        System.out.println(transferList);
+        int loop = -1;
+        while (loop != 0) {
+            int userSelection;
+            List<Transfer> transferList;
+            transferList = transferService.getAll();
+            System.out.println(transferList);
+            userSelection = consoleService.promptForInt("Please enter transfer ID to view details (0 to cancel):");
+            if (userSelection > 0) {
+                // add in getById
+            }
+
+        }
+
 		
 	}
 
