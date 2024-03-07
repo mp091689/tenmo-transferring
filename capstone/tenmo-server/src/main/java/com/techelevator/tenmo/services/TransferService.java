@@ -5,6 +5,7 @@ import com.techelevator.tenmo.dao.TransferDao;
 import com.techelevator.tenmo.dao.UserDao;
 import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.Transfer;
+import com.techelevator.tenmo.model.TransferDto;
 import com.techelevator.tenmo.model.User;
 import org.springframework.stereotype.Component;
 
@@ -42,4 +43,29 @@ public class TransferService {
         return true;
     }
 
+    public Transfer create(TransferDto transferDto, int userId) {
+        Account currentAccount = accountDao.getByUserId(userId);
+        Account foreignAccount = accountDao.getById(transferDto.getUserId());
+
+        Transfer transfer = new Transfer();
+        transfer.setAmount(transferDto.getAmount());
+        transfer.setTypeId(transferDto.getTypeId());
+        transfer.setStatusId(1);
+
+        if (transferDto.getTypeId() == 2) { // sending
+            transfer.setFromAccount(currentAccount.getId());
+            transfer.setToAccount(foreignAccount.getId());
+            if (currentAccount.getBalance().compareTo(transfer.getAmount()) >= 0) {
+                foreignAccount.deposit(transfer.getAmount());
+                currentAccount.withdraw(transfer.getAmount());
+                transfer.setStatusId(2);
+            }
+            transfer.setStatusId(3);
+        } else { // requesting
+            transfer.setFromAccount(foreignAccount.getId());
+            transfer.setToAccount(currentAccount.getId());
+        }
+
+        return transferDao.create(transfer, userId);
+    }
 }
