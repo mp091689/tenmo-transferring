@@ -25,7 +25,6 @@ public class JdbcTransferDao implements TransferDao{
 
     @Override
     public List<Transfer> getAll(int userId) {
-        //TODO: getAll
         List<Transfer> transfers = new ArrayList<>();
         String sql = TRANSFER_SELECT +
                 "WHERE account_from IN (SELECT account_id FROM account WHERE user_id = ?) OR account_to IN (SELECT account_id FROM account WHERE user_id = ?)";
@@ -43,7 +42,6 @@ public class JdbcTransferDao implements TransferDao{
 
     @Override
     public Transfer getById(int id, int userId) {
-        //TODO: getById
         Transfer transfer = null;
         String sql = TRANSFER_SELECT +
                 "WHERE transfer_id = ?;";
