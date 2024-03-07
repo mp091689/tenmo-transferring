@@ -8,10 +8,9 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.security.Principal;
 
 @Component
-public class JdbcAccountDao implements AccountDao{
+public class JdbcAccountDao implements AccountDao {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -21,7 +20,7 @@ public class JdbcAccountDao implements AccountDao{
 
     @Override
     public BigDecimal getBalance(int userID) {
-        BigDecimal balance = BigDecimal.valueOf(0);
+        BigDecimal balance;
         String sql = "SELECT balance FROM account AS a " +
                 "JOIN tenmo_user AS tu ON tu.user_id = a.user_id " +
                 "WHERE a.user_id = ?";
@@ -29,9 +28,10 @@ public class JdbcAccountDao implements AccountDao{
             SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userID);
             if (results.next()) {
                 balance = results.getBigDecimal("balance");
+            } else {
+                throw new DaoException("Account not found");
             }
-        }
-        catch (CannotGetJdbcConnectionException e) {
+        } catch (CannotGetJdbcConnectionException e) {
             throw new DaoException("Unable to connect to server or database", e);
         }
         return balance;
