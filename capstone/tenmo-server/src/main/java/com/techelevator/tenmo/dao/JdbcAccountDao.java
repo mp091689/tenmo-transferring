@@ -2,6 +2,7 @@ package com.techelevator.tenmo.dao;
 
 import com.techelevator.tenmo.exception.DaoException;
 import com.techelevator.tenmo.model.Account;
+import com.techelevator.tenmo.model.User;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
@@ -39,7 +40,43 @@ public class JdbcAccountDao implements AccountDao {
 
     @Override
     public Account getById(int id) {
-        Account account;
-        return null;
+        Account account = null;
+
+        String sql = "SELECT account_id, user_id, balance FROM account WHERE account_id = ?";
+        try {
+            SqlRowSet results = jdbcTemplate.queryForRowSet(sql, id);
+            if (results.next()) {
+                account = map(results);
+            }
+        } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Unable to connect to server or database", e);
+        }
+
+        return account;
+    }
+
+    @Override
+    public Account getByUserId(int userId) {
+        Account account = null;
+
+        String sql = "SELECT account_id, user_id, balance FROM account WHERE user_id = ?";
+        try {
+            SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userId);
+            if (results.next()) {
+                account = map(results);
+            }
+        } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Unable to connect to server or database", e);
+        }
+
+        return account;
+    }
+
+    private Account map(SqlRowSet rs) {
+       return new Account(
+                rs.getInt("account_id"),
+                rs.getInt("user_id"),
+                rs.getBigDecimal("balance")
+        );
     }
 }
