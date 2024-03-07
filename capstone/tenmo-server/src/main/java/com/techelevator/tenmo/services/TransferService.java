@@ -45,7 +45,7 @@ public class TransferService {
 
     public Transfer create(TransferDto transferDto, int userId) {
         Account currentAccount = accountDao.getByUserId(userId);
-        Account foreignAccount = accountDao.getById(transferDto.getUserId());
+        Account foreignAccount = accountDao.getByUserId(transferDto.getUserId());
 
         Transfer transfer = new Transfer();
         transfer.setAmount(transferDto.getAmount());
