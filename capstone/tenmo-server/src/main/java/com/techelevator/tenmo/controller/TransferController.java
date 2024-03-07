@@ -1,8 +1,11 @@
 package com.techelevator.tenmo.controller;
 
 import com.techelevator.tenmo.dao.TransferDao;
+import com.techelevator.tenmo.dao.UserDao;
 import com.techelevator.tenmo.exception.DaoException;
 import com.techelevator.tenmo.model.Transfer;
+import com.techelevator.tenmo.model.User;
+import com.techelevator.tenmo.services.TransferService;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.BadSqlGrammarException;
@@ -12,15 +15,22 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
+import java.security.Principal;
 import java.util.List;
 
 @PreAuthorize("isAuthenticated()")
 @RestController
 public class TransferController {
-    private TransferDao transferDao;
+    private final TransferDao transferDao;
+    private final TransferService transferService;
 
-    public TransferController(TransferDao transferDao) {
+    private final UserDao userDao;
+
+
+    public TransferController(TransferDao transferDao, TransferService transferService, UserDao userDao) {
         this.transferDao = transferDao;
+        this.transferService = transferService;
+        this.userDao = userDao;
     }
 
     @ResponseStatus(HttpStatus.CREATED)
@@ -52,13 +62,17 @@ public class TransferController {
     }
 
     @RequestMapping(path = "/transfers", method = RequestMethod.GET)
-    public List<Transfer> getAll(@RequestParam int userId){
-    return transferDao.getAll(userId);
+    public List<Transfer> getAll(Principal p){
+        User user = userDao.getUserByUsername(p.getName());
+        return transferDao.getAll(user.getId());
     }
     @RequestMapping(path = "transfers/pending", method = RequestMethod.GET)
     public List<Transfer> getAllPending(int userId){
         return transferDao.getAllPending(userId);
     }
 
-
+    @PutMapping("approve/{id}")
+    public boolean approve(@PathVariable int id, @RequestBody String status, Principal principal) {
+        return transferService.approve(id, status, principal.getName());
+    }
 }

@@ -2,6 +2,7 @@ package com.techelevator.tenmo.dao;
 
 import com.techelevator.tenmo.model.Transfer;
 
+import java.security.Principal;
 import java.util.List;
 
 public interface TransferDao {
@@ -9,6 +10,5 @@ public interface TransferDao {
     Transfer getById(int id, int userId);
     Transfer create(Transfer transfer);
     List<Transfer> getAllPending(int userId);
-    Boolean approve(int id, String status);
-
+    int approve(int transferId, int statusId, int userId);
 }
