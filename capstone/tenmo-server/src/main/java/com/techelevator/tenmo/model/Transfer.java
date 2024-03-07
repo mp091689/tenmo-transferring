@@ -1,13 +1,23 @@
 package com.techelevator.tenmo.model;
 
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
 
 public class Transfer {
     private int id;
+    @Min(value = 1, message = "The field 'typeId' is required.")
     private int typeId;
+    @Min(value = 1, message = "The field 'statusId' is required.")
     private int statusId;
+    @Min(value = 1, message = "The field 'fromAccount' is required.")
     private int fromAccount;
+    @Min(value = 1, message = "The field 'toAccount' is required.")
     private int toAccount;
+    @DecimalMin(value = "0.01", inclusive = true)
+    @Digits(integer = 13, fraction = 2)
     private BigDecimal amount;
 
     public Transfer(int id, int typeId, int statusId, int fromAccount, int toAccount, BigDecimal amount) {
