@@ -1,16 +1,15 @@
 package com.techelevator.tenmo.model;
 
-import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.Digits;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.*;
 import java.math.BigDecimal;
 
 public class Transfer {
     private int id;
     @Min(value = 1, message = "The field 'typeId' is required.")
+    @Max(value = 2, message = "The field 'typeId' may not exceed a value of 2.")
     private int typeId;
     @Min(value = 1, message = "The field 'statusId' is required.")
+    @Max(value = 3, message = "The field 'statusId' may not exceed a value of 3.")
     private int statusId;
     @Min(value = 1, message = "The field 'fromAccount' is required.")
     private int fromAccount;
