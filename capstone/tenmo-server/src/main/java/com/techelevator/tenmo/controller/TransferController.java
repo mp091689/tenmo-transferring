@@ -53,7 +53,11 @@ public class TransferController {
     @ResponseStatus(HttpStatus.CREATED)
     public Transfer create(@Valid @RequestBody TransferDto transferDto, Principal principal) {
         User user = userDao.getUserByUsername(principal.getName());
-        return transferService.create(transferDto, user.getId());
+        try {
+            return transferService.create(transferDto, user.getId());
+        } catch (RuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.toString());
+        }
     }
 
     @PutMapping("approve/{id}")
