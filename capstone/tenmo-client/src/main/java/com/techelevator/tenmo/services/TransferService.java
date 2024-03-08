@@ -38,7 +38,7 @@ public void setAuthToken(String authToken) {
 //        return transfer;
 //    }
 
-    public Transfer[] getAll() {
+    public void getAll() {
     Transfer[] transferList = new Transfer[0];
     String type;
     String name;
@@ -99,7 +99,6 @@ public void setAuthToken(String authToken) {
         {
             BasicLogger.log(e.getMessage());
         }
-        return transferList;
     }
 
     public List<Transfer> getPending(){
