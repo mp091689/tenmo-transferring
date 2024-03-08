@@ -9,6 +9,10 @@ public class Transfer {
     private int fromAccount;
     private int toAccount;
     private BigDecimal amount;
+    private String userFrom;
+    private String userTo;
+    private String type;
+    private String status;
 
     public Transfer(int id, int typeId, int statusId, int fromAccount, int toAccount, BigDecimal amount) {
         this.id = id;
@@ -82,5 +86,36 @@ public class Transfer {
 
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
+    }
+    public String getUserFrom() {
+        return userFrom;
+    }
+
+    public void setUserFrom(String userFrom) {
+        this.userFrom = userFrom;
+    }
+
+    public String getUserTo() {
+        return userTo;
+    }
+
+    public void setUserTo(String userTo) {
+        this.userTo = userTo;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }
