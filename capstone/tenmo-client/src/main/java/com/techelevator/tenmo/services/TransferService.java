@@ -11,10 +11,11 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class TransferService {
 
-public static final String API_BASE_URL = "http://localhost:8080/transfers";
+public static final String API_BASE_URL = "http://localhost:8080/transfers/";
 
 private RestTemplate restTemplate = new RestTemplate();
 
@@ -24,29 +25,32 @@ private AuthenticatedUser user;
 public void setAuthToken(String authToken) {
     this.authToken = authToken;
 }
-    public Transfer getById(int id){
-        Transfer transfer = null;
-        try {
-            ResponseEntity<Transfer> response = restTemplate.exchange(API_BASE_URL + id, HttpMethod.GET, makeAuthEntity(), Transfer.class);
-        } catch (RestClientResponseException | ResourceAccessException e) {
-            BasicLogger.log(e.getMessage());
-    }
-        return transfer;
-    }
+//    public Transfer getById(int id){
+//        Transfer transfer = null;
+//        try {
+//            ResponseEntity<Transfer> response = restTemplate.exchange(API_BASE_URL + id, HttpMethod.GET, makeAuthEntity(), Transfer.class);
+//        } catch (RestClientResponseException | ResourceAccessException e) {
+//            BasicLogger.log(e.getMessage());
+//    }
+//        return transfer;
+//    }
 
     public Transfer[] getAll() {
     Transfer[] transferList = null;
     String type;
     String name;
-        try {
+        try
+        {
             ResponseEntity<Transfer[]> response = restTemplate.exchange(API_BASE_URL + user.getUser().getId(), HttpMethod.GET, makeAuthEntity(), Transfer[].class);
             transferList = response.getBody();
             System.out.println("-------------------------------------------\n" +
                     "Transfers\n" +
                     "ID          From/To                 Amount\n" +
                     "-------------------------------------------");
-            if (transferList != null) {
-                for (Transfer t : transferList) {
+            if (transferList != null)
+            {
+                for (Transfer t : transferList)
+                {
                     if (user.getUser().getId() != t.getId())
                     {
                         type = "To :";
@@ -57,12 +61,35 @@ public void setAuthToken(String authToken) {
                         type = "From: ";
                         name = t.getUserTo();
                     }
-                    System.out.println(t.getId() + "" + type + name + "" + t.getAmount());
+                    System.out.println(t.getId() + "\t" + type + name + "\t" + t.getAmount());
                 }
                 System.out.println("---------\n" +
                         "Please enter transfer ID to view details (0 to cancel): \"");
+                Scanner scanner = new Scanner(System.in);
+                String input = scanner.nextLine();
+                if (Integer.parseInt(input) != 0)
+                {
+                    boolean found = false;
+                    for (Transfer t : transferList)
+                    {
+                        if (Integer.parseInt(input) == t.getId())
+                        {
+                            System.out.println("--------------------------------------------\n" +
+                                    "Transfer Details\n" +
+                                    "--------------------------------------------\n" +
+                                    t.toString());
+                            found = true;
+                        }
+                    }
+                    if (!found)
+                    {
+                        System.out.println("Please enter a valid ID");
+                    }
+                }
             }
-        } catch (RestClientResponseException | ResourceAccessException e) {
+        }
+        catch (RestClientResponseException | ResourceAccessException e)
+        {
             BasicLogger.log(e.getMessage());
         }
         return transferList;
