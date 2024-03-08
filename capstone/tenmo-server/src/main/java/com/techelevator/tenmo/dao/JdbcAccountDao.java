@@ -41,7 +41,7 @@ public class JdbcAccountDao implements AccountDao {
     public Account getById(int id) {
         String sql = "SELECT account_id, user_id, balance FROM account WHERE account_id = ?";
         try {
-            return jdbcTemplate.queryForObject(sql, new Account());
+            return jdbcTemplate.queryForObject(sql, new Account(), id);
         } catch (CannotGetJdbcConnectionException e) {
             throw new DaoException("Unable to connect to server or database", e);
         }
@@ -59,9 +59,10 @@ public class JdbcAccountDao implements AccountDao {
 
     @Override
     public Account update(Account account) {
+        String sql = "UPDATE account a SET balance = ? WHERE a.account_id = ?";
         try {
-            String sql = "UPDATE account a SET balance = ? WHERE a.account_id = ?";
-            return jdbcTemplate.queryForObject(sql, new Account(), account.getBalance(), account.getId());
+            jdbcTemplate.update(sql, account.getBalance(), account.getId());
+            return getById(account.getId());
         } catch (CannotGetJdbcConnectionException e) {
             throw new DaoException("Unable to connect to server or database", e);
         } catch (DataIntegrityViolationException e) {
