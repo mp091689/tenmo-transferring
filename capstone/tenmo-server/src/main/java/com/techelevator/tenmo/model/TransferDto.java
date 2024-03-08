@@ -14,7 +14,7 @@ public class TransferDto {
     private int typeId;
 
     @DecimalMin(value = "0.0", inclusive = false)
-    @Digits(integer=10, fraction=2)
+    @Digits(integer=13, fraction=2)
     private BigDecimal amount;
 
     public int getUserId() {

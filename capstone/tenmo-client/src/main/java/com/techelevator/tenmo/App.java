@@ -11,6 +11,7 @@ import com.techelevator.tenmo.services.TransferService;
 import java.math.BigDecimal;
 import java.sql.SQLOutput;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class App {
@@ -98,13 +99,12 @@ public class App {
         BigDecimal balance;
         balance = accountService.getBalance(currentUser);
         System.out.println("Your current account balance is: " + balance);
-
 	}
 
 	private void viewTransferHistory() {
-        List<Transfer> transferList;
+        Transfer[] transferList;
         transferList = transferService.getAll();
-        System.out.println(transferList);
+        System.out.println(Arrays.toString(transferList));
         }
 
 	private void viewPendingRequests() {
