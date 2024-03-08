@@ -39,7 +39,7 @@ public void setAuthToken(String authToken) {
 //    }
 
     public Transfer[] getAll() {
-    Transfer[] transferList = null;
+    Transfer[] transferList = new Transfer[0];
     String type;
     String name;
         try
@@ -48,9 +48,9 @@ public void setAuthToken(String authToken) {
                     "Transfers\n" +
                     "ID          From/To                 Amount\n" +
                     "-------------------------------------------");
-            ResponseEntity<Transfer[]> response = restTemplate.exchange(API_BASE_URL + user.getUser().getId(), HttpMethod.GET, makeAuthEntity(), Transfer[].class);
+            ResponseEntity<Transfer[]> response = restTemplate.exchange(API_BASE_URL, HttpMethod.GET, makeAuthEntity(), Transfer[].class);
             transferList = response.getBody();
-            if (transferList != null)
+            if (transferList != null && transferList.length > 0)
             {
                 for (Transfer t : transferList)
                 {

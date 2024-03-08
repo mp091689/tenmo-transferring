@@ -70,6 +70,7 @@ public class App {
             consoleService.printErrorMessage();
         } else {
             accountService.setAuthToken(currentUser.getToken());
+            transferService.setAuthToken(currentUser.getToken());
         }
     }
 
