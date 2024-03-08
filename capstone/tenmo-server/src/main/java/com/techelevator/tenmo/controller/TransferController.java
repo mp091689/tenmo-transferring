@@ -3,6 +3,7 @@ package com.techelevator.tenmo.controller;
 import com.techelevator.tenmo.dao.TransferDao;
 import com.techelevator.tenmo.dao.UserDao;
 import com.techelevator.tenmo.model.Transfer;
+import com.techelevator.tenmo.model.TransferApproveDto;
 import com.techelevator.tenmo.model.TransferDto;
 import com.techelevator.tenmo.model.User;
 import com.techelevator.tenmo.services.TransferService;
@@ -45,8 +46,9 @@ public class TransferController {
     }
 
     @GetMapping("pending")
-    public List<Transfer> getAllPending(int userId) {
-        return transferDao.getAllPending(userId);
+    public List<Transfer> getAllPending(Principal principal) {
+        User user = userDao.getUserByUsername(principal.getName());
+        return transferDao.getAllPending(user.getId());
     }
 
     @PostMapping
@@ -60,8 +62,8 @@ public class TransferController {
         }
     }
 
-    @PutMapping("approve/{id}")
-    public boolean approve(@PathVariable int id, @RequestBody String status, Principal principal) {
-        return transferService.approve(id, status, principal.getName());
+    @PutMapping("{id}")
+    public boolean approve(@PathVariable int id, @RequestBody TransferApproveDto transferApproveDto, Principal principal) {
+        return transferService.approve(id, transferApproveDto.getStatusId(), principal.getName());
     }
 }

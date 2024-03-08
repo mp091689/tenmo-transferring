@@ -55,9 +55,9 @@ public class JdbcTransferDao implements TransferDao {
 
     @Override
     public List<Transfer> getAllPending(int userId) {
-        String sql = TRANSFER_SELECT + "WHERE t.account_from IN (SELECT account_id FROM account WHERE user_id = ?) OR t.account_to IN (SELECT account_id FROM account WHERE user_id = ?) AND transfer_status_id = 1;";
+        String sql = TRANSFER_SELECT + "WHERE (t.account_from IN (SELECT account_id FROM account WHERE user_id = ?) OR t.account_to IN (SELECT account_id FROM account WHERE user_id = ?)) AND transfer_status_id = 1";
         try {
-            return jdbcTemplate.query(sql, new Transfer());
+            return jdbcTemplate.query(sql, new Transfer(), userId, userId);
         } catch (CannotGetJdbcConnectionException e) {
             throw new DaoException("Cannot connect to database.", e);
         }
