@@ -102,13 +102,10 @@ public class App {
 	}
 
 	private void viewTransferHistory() {
-            List<Transfer> transferList;
-            transferList = transferService.getAll();
-            System.out.println(transferList);
+        List<Transfer> transferList;
+        transferList = transferService.getAll();
+        System.out.println(transferList);
         }
-
-		
-	}
 
 	private void viewPendingRequests() {
 		List<Transfer> pendingList;
