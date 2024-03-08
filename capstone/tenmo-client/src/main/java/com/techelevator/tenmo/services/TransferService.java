@@ -1,5 +1,6 @@
 package com.techelevator.tenmo.services;
 
+import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.AuthenticatedUser;
 import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.util.BasicLogger;
@@ -22,11 +23,14 @@ private RestTemplate restTemplate = new RestTemplate();
 private final Scanner scanner = new Scanner(System.in);
 private final UserService userService = new UserService();
 
+private final AccountService accountService = new AccountService();
+
 private AuthenticatedUser user;
 
 public void setAuthenticatedUser(AuthenticatedUser user) {
     this.user = user;
     userService.setAuthenticatedUser(user);
+    accountService.setAuthToken(user.getToken());
 }
 //    public Transfer getById(int id){
 //        Transfer transfer = null;
@@ -39,9 +43,9 @@ public void setAuthenticatedUser(AuthenticatedUser user) {
 //    }
 
     public void getAll() {
-        Transfer[] transferList = new Transfer[0];
-        String type;
-        String name;
+    Transfer[] transferList;
+    String type;
+    String name;
         try
         {
             System.out.println("-------------------------------------------\n" +
@@ -50,11 +54,13 @@ public void setAuthenticatedUser(AuthenticatedUser user) {
                     "-------------------------------------------");
             ResponseEntity<Transfer[]> response = restTemplate.exchange(API_BASE_URL, HttpMethod.GET, makeAuthEntity(), Transfer[].class);
             transferList = response.getBody();
+            int currentAccountId = accountService.getAccount().getId();
             if (transferList != null && transferList.length > 0)
             {
                 for (Transfer t : transferList)
                 {
-                    if (user.getUser().getId() != t.getId())
+
+                    if (currentAccountId != t.getFromAccount())
                     {
                         type = "To :";
                         name = String.valueOf(t.getToAccount());
@@ -100,14 +106,78 @@ public void setAuthenticatedUser(AuthenticatedUser user) {
         }
     }
 
-    public List<Transfer> getPending(){
-        List<Transfer> pendingList = new ArrayList<>();
-        try {
-            ResponseEntity<Transfer> response = restTemplate.exchange(API_BASE_URL + "/pending", HttpMethod.GET, makeAuthEntity(), Transfer.class);
-        } catch (RestClientResponseException | ResourceAccessException e) {
+    public void getPending(){
+        Transfer[] transferList;
+        String type;
+        String name;
+        try
+        {
+            System.out.println("-------------------------------------------\n" +
+                    "Pending Transfers\n" +
+                    "ID          From/To                 Amount\n" +
+                    "-------------------------------------------");
+            ResponseEntity<Transfer[]> response = restTemplate.exchange(API_BASE_URL + "pending", HttpMethod.GET, makeAuthEntity(), Transfer[].class);
+            transferList = response.getBody();
+            if (transferList != null && transferList.length > 0)
+            {
+                for (Transfer t : transferList)
+                {
+                    if (user.getUser().getId() != t.getId())
+                    {
+                        type = "To :";
+                        name = String.valueOf(t.getToAccount());
+                    }
+                    else
+                    {
+                        type = "From: ";
+                        name = String.valueOf(t.getToAccount());
+                    }
+                    System.out.println(t.getId() + "\t" + type + name + "\t" + t.getAmount());
+                }
+                System.out.println("---------\n" +
+                        "Please enter transfer ID approve or reject (0 to cancel): \"");
+                String input = scanner.nextLine();
+                if (Integer.parseInt(input) != 0)
+                {
+                    boolean found = false;
+                    for (Transfer t : transferList)
+                    {
+                        if (Integer.parseInt(input) == t.getId())
+                        {
+                            System.out.println("--------------------------------------------\n" +
+                                    "Transfer Details\n" +
+                                    "--------------------------------------------\n" +
+                                    t.toString());
+                            found = true;
+
+                            System.out.println("---------\n" +
+                                    "Press 1 to approve or press 2 to reject (0 to cancel): \"");
+                            String approveOrReject = scanner.nextLine();
+                            if(Integer.parseInt(approveOrReject) == 1){
+
+                                t.setStatusId(2);
+                                System.out.println("Approved :)");
+                            } else if (Integer.parseInt(approveOrReject) == 2){
+                                t.setStatusId(3);
+                                System.out.println("Rejected :(");
+                            }
+                        }
+                    }
+                    if (!found)
+                    {
+                        System.out.println("Please enter a valid ID");
+                    }
+                }
+            }
+            else
+            {
+                System.out.println("You have no pending transactions.");
+            }
+        }
+        catch (RestClientResponseException | ResourceAccessException e)
+        {
             BasicLogger.log(e.getMessage());
         }
-        return pendingList;
     }
 
     public Transfer sendBucks() {

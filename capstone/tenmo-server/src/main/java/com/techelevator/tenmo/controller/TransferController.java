@@ -36,19 +36,19 @@ public class TransferController {
         return transferDao.getAll(user.getId());
     }
 
-    @GetMapping(path = "{id}")
+    @GetMapping("pending")
+    public List<Transfer> getAllPending(Principal principal) {
+        User user = userDao.getUserByUsername(principal.getName());
+        return transferDao.getAllPending(user.getId());
+    }
+
+    @GetMapping("{id}")
     public Transfer getById(@PathVariable int id) {
         Transfer transfer = transferDao.getById(id);
         if (transfer != null) {
             return transfer;
         }
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Transfer not found.");
-    }
-
-    @GetMapping("pending")
-    public List<Transfer> getAllPending(Principal principal) {
-        User user = userDao.getUserByUsername(principal.getName());
-        return transferDao.getAllPending(user.getId());
     }
 
     @PostMapping
