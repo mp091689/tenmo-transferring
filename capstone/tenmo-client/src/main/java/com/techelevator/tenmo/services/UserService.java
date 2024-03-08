@@ -1,5 +1,6 @@
 package com.techelevator.tenmo.services;
 
+import com.techelevator.tenmo.model.AuthenticatedUser;
 import com.techelevator.tenmo.model.User;
 import com.techelevator.util.BasicLogger;
 import org.springframework.http.HttpEntity;
@@ -13,32 +14,41 @@ import org.springframework.web.client.RestTemplate;
 public class UserService {
     private static final String API_BASE_URL = "http://localhost:8080/";
     private final RestTemplate restTemplate = new RestTemplate();
-    private String authToken = null;
+    private AuthenticatedUser user;
 
-    public void setAuthToken(String authToken) {
-        this.authToken = authToken;
+    public void setAuthenticatedUser(AuthenticatedUser user) {
+        this.user = user;
     }
 
-    public User[] getAllAccounts() {
-        User[] accounts = null;
+    public void getAllAccounts() {
+        User[] accounts = new User[0];
         try {
+            System.out.println("-------------------------------------------\n" +
+                    "Users\n" +
+                    "ID          Name\n" +
+                    "-------------------------------------------");
             ResponseEntity<User[]> response = restTemplate.exchange(API_BASE_URL + "user", HttpMethod.GET, makeAuthEntity(), User[].class);
             accounts = response.getBody();
             if (accounts != null) {
-                for (User user : accounts) {
-                    System.out.println(user);
+                for (User u : accounts) {
+                    if (user.getUser().getId() != u.getId()) {
+                        System.out.println(u.getId() + "\t" + u.getUsername());
+                    }
                 }
+            }
+            else
+            {
+                System.out.println("There are no registered accounts.");
             }
         }
         catch (RestClientResponseException | ResourceAccessException e) {
             BasicLogger.log(e.getMessage());
         }
-        return accounts;
     }
 
-    private HttpEntity<Void> makeAuthEntity() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(authToken);
-        return new HttpEntity<>(headers);
-    }
+        private HttpEntity<Void> makeAuthEntity(){
+            HttpHeaders headers = new HttpHeaders();
+            headers.setBearerAuth(user.getToken());
+            return new HttpEntity<>(headers);
+        }
 }

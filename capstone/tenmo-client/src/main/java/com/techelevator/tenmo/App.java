@@ -3,10 +3,7 @@ package com.techelevator.tenmo;
 import com.techelevator.tenmo.model.AuthenticatedUser;
 import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.UserCredentials;
-import com.techelevator.tenmo.services.AccountService;
-import com.techelevator.tenmo.services.AuthenticationService;
-import com.techelevator.tenmo.services.ConsoleService;
-import com.techelevator.tenmo.services.TransferService;
+import com.techelevator.tenmo.services.*;
 
 import java.math.BigDecimal;
 import java.sql.SQLOutput;
@@ -21,6 +18,7 @@ public class App {
     private final ConsoleService consoleService = new ConsoleService();
     private final AccountService accountService = new AccountService();
     private final TransferService transferService = new TransferService();
+    private final UserService userService = new UserService();
     private final AuthenticationService authenticationService = new AuthenticationService(API_BASE_URL);
 
     private AuthenticatedUser currentUser;
@@ -71,6 +69,7 @@ public class App {
         } else {
             accountService.setAuthToken(currentUser.getToken());
             transferService.setAuthenticatedUser(currentUser);
+            userService.setAuthenticatedUser(currentUser);
         }
     }
 
@@ -115,17 +114,14 @@ public class App {
 		List<Transfer> pendingList;
         pendingList = transferService.getPending();
         System.out.println(pendingList);
-
-		
 	}
 
 	private void sendBucks() {
-		// TODO Auto-generated meth+od stub
-		
+		transferService.sendBucks();
 	}
 
 	private void requestBucks() {
-		// TODO Auto-generated method stub
+		// TODO Auto-generated method
 		
 	}
 

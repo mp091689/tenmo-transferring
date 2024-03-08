@@ -9,6 +9,7 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -18,6 +19,8 @@ public class TransferService {
 public static final String API_BASE_URL = "http://localhost:8080/transfers/";
 
 private RestTemplate restTemplate = new RestTemplate();
+private final Scanner scanner = new Scanner(System.in);
+private final UserService userService = new UserService();
 
 private AuthenticatedUser user;
 
@@ -35,9 +38,9 @@ public void setAuthenticatedUser(AuthenticatedUser user) {
 //    }
 
     public void getAll() {
-    Transfer[] transferList = new Transfer[0];
-    String type;
-    String name;
+        Transfer[] transferList = new Transfer[0];
+        String type;
+        String name;
         try
         {
             System.out.println("-------------------------------------------\n" +
@@ -64,7 +67,6 @@ public void setAuthenticatedUser(AuthenticatedUser user) {
                 }
                 System.out.println("---------\n" +
                         "Please enter transfer ID to view details (0 to cancel): \"");
-                Scanner scanner = new Scanner(System.in);
                 String input = scanner.nextLine();
                 if (Integer.parseInt(input) != 0)
                 {
@@ -98,13 +100,35 @@ public void setAuthenticatedUser(AuthenticatedUser user) {
     }
 
     public List<Transfer> getPending(){
-    List<Transfer> pendingList = new ArrayList<>();
+        List<Transfer> pendingList = new ArrayList<>();
         try {
             ResponseEntity<Transfer> response = restTemplate.exchange(API_BASE_URL + "/pending", HttpMethod.GET, makeAuthEntity(), Transfer.class);
         } catch (RestClientResponseException | ResourceAccessException e) {
             BasicLogger.log(e.getMessage());
         }
         return pendingList;
+    }
+
+    public Transfer sendBucks() {
+        Transfer transfer = new Transfer();
+        try
+        {
+            userService.getAllAccounts();
+            System.out.println("---------\n" +
+                    "\n" +
+                    "Enter ID of user you are sending to (0 to cancel):\n");
+            String sendTo = scanner.nextLine();
+            System.out.println("Enter amount:");
+            String amount = scanner.nextLine();
+            transfer.setToAccount(Integer.parseInt(sendTo));
+            transfer.setAmount(BigDecimal.valueOf(Long.parseLong(amount)));
+            transfer.setTypeId(2);
+        }
+        catch (RestClientResponseException | ResourceAccessException e)
+        {
+            BasicLogger.log(e.getMessage());
+        }
+        return transfer;
     }
 
 
