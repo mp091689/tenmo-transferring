@@ -53,12 +53,12 @@ public void setAuthenticatedUser(AuthenticatedUser user) {
                     if (user.getUser().getId() != t.getId())
                     {
                         type = "To :";
-                        name = t.getUserTo();
+                        name = String.valueOf(t.getToAccount());
                     }
                     else
                     {
                         type = "From: ";
-                        name = t.getUserTo();
+                        name = String.valueOf(t.getToAccount());
                     }
                     System.out.println(t.getId() + "\t" + type + name + "\t" + t.getAmount());
                 }
