@@ -104,9 +104,6 @@ public class App {
 	}
 
 	private void viewTransferHistory() {
-//        Transfer[] transferList;
-//        transferList = transferService.getAll();
-//        System.out.println(Arrays.toString(transferList));
         transferService.getAll();
         }
 
@@ -119,8 +116,7 @@ public class App {
 	}
 
 	private void requestBucks() {
-		// TODO Auto-generated method
-		
+		transferService.requestBucks();
 	}
 
 }
