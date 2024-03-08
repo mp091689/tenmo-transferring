@@ -19,14 +19,10 @@ public static final String API_BASE_URL = "http://localhost:8080/transfers/";
 
 private RestTemplate restTemplate = new RestTemplate();
 
-private String authToken = null;
 private AuthenticatedUser user;
+
 public void setAuthenticatedUser(AuthenticatedUser user) {
     this.user = user;
-}
-
-public void setAuthToken(String authToken) {
-    this.authToken = authToken;
 }
 //    public Transfer getById(int id){
 //        Transfer transfer = null;
@@ -115,14 +111,14 @@ public void setAuthToken(String authToken) {
 
     private HttpEntity<Void> makeAuthEntity(){
         HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(authToken);
+        headers.setBearerAuth(user.getToken());
         return new HttpEntity<>(headers);
     }
 
     private HttpEntity<Transfer> makeTransferEntity(Transfer transfer){
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
-    headers.setBearerAuth(authToken);
+    headers.setBearerAuth(user.getToken());
     return new HttpEntity<>(transfer, headers);
     }
 
