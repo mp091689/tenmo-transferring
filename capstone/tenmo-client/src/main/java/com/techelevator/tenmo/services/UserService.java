@@ -20,6 +20,7 @@ public class UserService {
         this.user = user;
     }
 
+
     public void getAllAccounts() {
         User[] accounts = new User[0];
         try {
@@ -27,12 +28,12 @@ public class UserService {
                     "Users\n" +
                     "ID          Name\n" +
                     "-------------------------------------------");
-            ResponseEntity<User[]> response = restTemplate.exchange(API_BASE_URL + "users", HttpMethod.GET, makeAuthEntity(), User[].class);
+            ResponseEntity<User[]> response = restTemplate.exchange(API_BASE_URL + "tenmo_user", HttpMethod.GET, makeAuthEntity(), User[].class);
             accounts = response.getBody();
             if (accounts != null) {
                 for (User u : accounts) {
                     if (user.getUser().getId() != u.getId()) {
-                        System.out.println(u.getId() + "\t" + u.getUsername());
+                        System.out.println(u.getId() + "\t\t" + u.getUsername());
                     }
                 }
             }

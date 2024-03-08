@@ -35,12 +35,14 @@ public class AccountService {
     }
 
     public Account getAccount() {
+        Account account = null;
         try {
             ResponseEntity<Account> response = restTemplate.exchange(API_BASE_URL + "accounts", HttpMethod.GET, makeAuthEntity(), Account.class);
+            account = response.getBody();
         } catch (RestClientResponseException | ResourceAccessException e) {
             BasicLogger.log(e.getMessage());
         }
-        return response.getBody();
+        return account;
     }
 
     private HttpEntity<Void> makeAuthEntity() {
