@@ -10,4 +10,6 @@ public interface AccountDao {
     Account getById(int id);
 
     Account getByUserId(int userId);
+
+    Account update(Account foreignAccount);
 }

@@ -2,7 +2,7 @@ package com.techelevator.tenmo.dao;
 
 import com.techelevator.tenmo.exception.DaoException;
 import com.techelevator.tenmo.model.Account;
-import com.techelevator.tenmo.model.User;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
@@ -12,7 +12,6 @@ import java.math.BigDecimal;
 
 @Component
 public class JdbcAccountDao implements AccountDao {
-
     private final JdbcTemplate jdbcTemplate;
 
     public JdbcAccountDao(JdbcTemplate jdbcTemplate) {
@@ -40,43 +39,33 @@ public class JdbcAccountDao implements AccountDao {
 
     @Override
     public Account getById(int id) {
-        Account account = null;
-
         String sql = "SELECT account_id, user_id, balance FROM account WHERE account_id = ?";
         try {
-            SqlRowSet results = jdbcTemplate.queryForRowSet(sql, id);
-            if (results.next()) {
-                account = map(results);
-            }
+            return jdbcTemplate.queryForObject(sql, new Account());
         } catch (CannotGetJdbcConnectionException e) {
             throw new DaoException("Unable to connect to server or database", e);
         }
-
-        return account;
     }
 
     @Override
     public Account getByUserId(int userId) {
-        Account account = null;
-
         String sql = "SELECT account_id, user_id, balance FROM account WHERE user_id = ?";
         try {
-            SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userId);
-            if (results.next()) {
-                account = map(results);
-            }
+            return jdbcTemplate.queryForObject(sql, new Account(), userId);
         } catch (CannotGetJdbcConnectionException e) {
             throw new DaoException("Unable to connect to server or database", e);
         }
-
-        return account;
     }
 
-    private Account map(SqlRowSet rs) {
-       return new Account(
-                rs.getInt("account_id"),
-                rs.getInt("user_id"),
-                rs.getBigDecimal("balance")
-        );
+    @Override
+    public Account update(Account account) {
+        try {
+            String sql = "UPDATE account a SET balance = ? WHERE a.account_id = ?";
+            return jdbcTemplate.queryForObject(sql, new Account(), account.getBalance(), account.getId());
+        } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Unable to connect to server or database", e);
+        } catch (DataIntegrityViolationException e) {
+            throw new DaoException("Data integrity violation", e);
+        }
     }
 }

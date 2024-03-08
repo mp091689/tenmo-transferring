@@ -1,11 +1,18 @@
 package com.techelevator.tenmo.model;
 
-import java.math.BigDecimal;
+import org.springframework.jdbc.core.RowMapper;
 
-public class Account {
+import java.math.BigDecimal;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+public class Account implements RowMapper<Account> {
     private int id;
     private int userId;
     private BigDecimal balance;
+
+    public Account() {
+    }
 
     public Account(int id, int userId, BigDecimal balance) {
         this.id = id;
@@ -45,5 +52,14 @@ public class Account {
 
         balance = balance.subtract(amount);
         return balance;
+    }
+
+    @Override
+    public Account mapRow(ResultSet resultSet, int i) throws SQLException {
+        return new Account(
+                resultSet.getInt("account_id"),
+                resultSet.getInt("user_id"),
+                resultSet.getBigDecimal("balance")
+        );
     }
 }

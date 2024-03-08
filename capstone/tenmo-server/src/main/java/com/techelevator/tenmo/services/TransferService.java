@@ -23,7 +23,7 @@ public class TransferService {
 
     public boolean approve(int transferId, String status, String userName) {
         User user = userDao.getUserByUsername(userName);
-        Transfer transfer = transferDao.getById(transferId, user.getId());
+        Transfer transfer = transferDao.getById(transferId);
         Account accountFrom = accountDao.getById(transfer.getFromAccount());
 
         int statusId = status.equals("approve") ? 2 : 3;
@@ -38,7 +38,9 @@ public class TransferService {
 
         Account accountTo = accountDao.getById(transfer.getToAccount());
         accountTo.deposit(transfer.getAmount());
+        accountDao.update(accountTo);
         accountFrom.withdraw(transfer.getAmount());
+        accountDao.update(accountFrom);
 
         return true;
     }
@@ -57,7 +59,9 @@ public class TransferService {
             transfer.setToAccount(foreignAccount.getId());
             if (currentAccount.getBalance().compareTo(transfer.getAmount()) >= 0) {
                 foreignAccount.deposit(transfer.getAmount());
+                accountDao.update(foreignAccount);
                 currentAccount.withdraw(transfer.getAmount());
+                accountDao.update(currentAccount);
                 transfer.setStatusId(2);
             } else {
                 transfer.setStatusId(3);
