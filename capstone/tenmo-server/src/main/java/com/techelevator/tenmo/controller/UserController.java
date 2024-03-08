@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @PreAuthorize("isAuthenticated()")
-@RequestMapping("users")
+@RequestMapping("tenmo_user")
 public class UserController {
     private final UserDao userDao;
 
@@ -19,7 +19,7 @@ public class UserController {
         this.userDao = userDao;
     }
 
-    @GetMapping
+    @GetMapping()
     public List<User> getUsers() {
         return userDao.allUsernameId();
     }
