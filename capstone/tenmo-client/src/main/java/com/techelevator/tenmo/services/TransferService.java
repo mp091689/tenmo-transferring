@@ -21,6 +21,9 @@ private RestTemplate restTemplate = new RestTemplate();
 
 private String authToken = null;
 private AuthenticatedUser user;
+public void setAuthenticatedUser(AuthenticatedUser user) {
+    this.user = user;
+}
 
 public void setAuthToken(String authToken) {
     this.authToken = authToken;
@@ -41,12 +44,12 @@ public void setAuthToken(String authToken) {
     String name;
         try
         {
-            ResponseEntity<Transfer[]> response = restTemplate.exchange(API_BASE_URL + user.getUser().getId(), HttpMethod.GET, makeAuthEntity(), Transfer[].class);
-            transferList = response.getBody();
             System.out.println("-------------------------------------------\n" +
                     "Transfers\n" +
                     "ID          From/To                 Amount\n" +
                     "-------------------------------------------");
+            ResponseEntity<Transfer[]> response = restTemplate.exchange(API_BASE_URL + user.getUser().getId(), HttpMethod.GET, makeAuthEntity(), Transfer[].class);
+            transferList = response.getBody();
             if (transferList != null)
             {
                 for (Transfer t : transferList)
@@ -86,6 +89,10 @@ public void setAuthToken(String authToken) {
                         System.out.println("Please enter a valid ID");
                     }
                 }
+            }
+            else
+            {
+                System.out.println("You have no transactions.");
             }
         }
         catch (RestClientResponseException | ResourceAccessException e)
