@@ -26,6 +26,7 @@ private AuthenticatedUser user;
 
 public void setAuthenticatedUser(AuthenticatedUser user) {
     this.user = user;
+    userService.setAuthenticatedUser(user);
 }
 //    public Transfer getById(int id){
 //        Transfer transfer = null;
