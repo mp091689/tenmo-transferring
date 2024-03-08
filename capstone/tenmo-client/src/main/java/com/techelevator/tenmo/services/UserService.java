@@ -24,6 +24,11 @@ public class UserService {
         try {
             ResponseEntity<User[]> response = restTemplate.exchange(API_BASE_URL + "user", HttpMethod.GET, makeAuthEntity(), User[].class);
             accounts = response.getBody();
+            if (accounts != null) {
+                for (User user : accounts) {
+                    System.out.println(user);
+                }
+            }
         }
         catch (RestClientResponseException | ResourceAccessException e) {
             BasicLogger.log(e.getMessage());
