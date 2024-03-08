@@ -21,12 +21,10 @@ public class TransferService {
         this.userDao = userDao;
     }
 
-    public boolean approve(int transferId, String status, String userName) {
+    public boolean approve(int transferId, int statusId, String userName) {
         User user = userDao.getUserByUsername(userName);
         Transfer transfer = transferDao.getById(transferId);
         Account accountFrom = accountDao.getById(transfer.getFromAccount());
-
-        int statusId = status.equals("approve") ? 2 : 3;
 
         if (accountFrom.getBalance().compareTo(transfer.getAmount()) < 0) {
             return false;
