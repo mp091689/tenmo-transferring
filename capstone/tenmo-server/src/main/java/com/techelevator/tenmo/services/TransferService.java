@@ -28,14 +28,14 @@ public class TransferService {
 
         Account accountTo = accountDao.getById(transfer.getToAccount());
         if (accountTo.getUserId() == user.getId()){
-            throw new RuntimeException("It is not possible to approve transfer requested by you");
+            throw new RuntimeException("It is not possible to approve/decline transfer requested by you");
         }
 
         if (transfer.getStatusId() != 1) {
             throw new RuntimeException("The Transfer is already approved/declined");
         }
 
-        if (accountFrom.getBalance().compareTo(transfer.getAmount()) < 0) {
+        if (statusId == 2 && accountFrom.getBalance().compareTo(transfer.getAmount()) < 0) {
             throw new RuntimeException("Not enough money on your account");
         }
 
