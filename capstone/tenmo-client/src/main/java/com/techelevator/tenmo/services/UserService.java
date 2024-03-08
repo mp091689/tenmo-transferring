@@ -27,7 +27,7 @@ public class UserService {
                     "Users\n" +
                     "ID          Name\n" +
                     "-------------------------------------------");
-            ResponseEntity<User[]> response = restTemplate.exchange(API_BASE_URL + "user", HttpMethod.GET, makeAuthEntity(), User[].class);
+            ResponseEntity<User[]> response = restTemplate.exchange(API_BASE_URL + "users", HttpMethod.GET, makeAuthEntity(), User[].class);
             accounts = response.getBody();
             if (accounts != null) {
                 for (User u : accounts) {
