@@ -64,7 +64,7 @@ public class JdbcTransferDao implements TransferDao {
     }
 
     @Override
-    public int approve(int transferId, int statusId, int userId) {
+    public Transfer update(Transfer transfer) {
         try {
             String sql = "UPDATE transfer t " +
                     "SET transfer_status_id = ? " +
@@ -72,7 +72,8 @@ public class JdbcTransferDao implements TransferDao {
                     "AND t.transfer_status_id = 1 " +
                     "AND t.transfer_id = ? " +
                     "AND t.account_to = ?";
-            return jdbcTemplate.update(sql, statusId, transferId, userId);
+            jdbcTemplate.update(sql, transfer.getStatusId(), transfer.getId(), transfer.getToAccount());
+            return getById(transfer.getId());
         } catch (CannotGetJdbcConnectionException e) {
             throw new DaoException("Cannot connect to database.", e);
         } catch (DataIntegrityViolationException e) {

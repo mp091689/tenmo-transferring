@@ -21,26 +21,32 @@ public class TransferService {
         this.userDao = userDao;
     }
 
-    public boolean approve(int transferId, int statusId, String userName) {
+    public Transfer approve(int transferId, int statusId, String userName) {
         User user = userDao.getUserByUsername(userName);
         Transfer transfer = transferDao.getById(transferId);
         Account accountFrom = accountDao.getById(transfer.getFromAccount());
 
-        if (accountFrom.getBalance().compareTo(transfer.getAmount()) < 0) {
-            return false;
+        if (transfer.getStatusId() != 1) {
+            throw new RuntimeException("The Transfer is already approved/declined");
         }
 
-        if (transferDao.approve(transferId, statusId, user.getId()) < 1) {
-            return false;
+        if (accountFrom.getBalance().compareTo(transfer.getAmount()) < 0) {
+            throw new RuntimeException("Not enough money on your account");
         }
 
         Account accountTo = accountDao.getById(transfer.getToAccount());
+        if (accountTo.getUserId() == user.getId()){
+            throw new RuntimeException("It is not possible to approve transfer requested by you");
+        }
+
         accountTo.deposit(transfer.getAmount());
         accountDao.update(accountTo);
+
         accountFrom.withdraw(transfer.getAmount());
         accountDao.update(accountFrom);
 
-        return true;
+        transfer.setStatusId(statusId);
+        return transferDao.update(transfer);
     }
 
     public Transfer create(TransferDto transferDto, int userId) {
