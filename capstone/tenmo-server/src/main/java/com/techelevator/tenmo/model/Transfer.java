@@ -1,9 +1,16 @@
 package com.techelevator.tenmo.model;
 
-import javax.validation.constraints.*;
-import java.math.BigDecimal;
+import org.springframework.jdbc.core.RowMapper;
 
-public class Transfer {
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import java.math.BigDecimal;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+public class Transfer implements RowMapper<Transfer> {
     private int id;
     @Min(value = 1, message = "The field 'typeId' is required.")
     @Max(value = 2, message = "The field 'typeId' may not exceed a value of 2.")
@@ -92,5 +99,17 @@ public class Transfer {
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
-    
+
+    @Override
+    public Transfer mapRow(ResultSet resultSet, int i) throws SQLException {
+        Transfer transfer = new Transfer();
+        transfer.setId(resultSet.getInt("transfer_id"));
+        transfer.setTypeId(resultSet.getInt("transfer_type_id"));
+        transfer.setStatusId(resultSet.getInt("transfer_status_id"));
+        transfer.setFromAccount(resultSet.getInt("account_from"));
+        transfer.setToAccount(resultSet.getInt("account_to"));
+        transfer.setAmount(resultSet.getBigDecimal("amount"));
+
+        return transfer;
+    }
 }

@@ -36,8 +36,8 @@ public class TransferController {
     }
 
     @GetMapping(path = "{id}")
-    public Transfer getById(@PathVariable int id, @RequestParam int userId) {
-        Transfer transfer = transferDao.getById(id, userId);
+    public Transfer getById(@PathVariable int id) {
+        Transfer transfer = transferDao.getById(id);
         if (transfer != null) {
             return transfer;
         }
