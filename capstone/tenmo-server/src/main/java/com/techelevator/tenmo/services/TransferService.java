@@ -49,6 +49,10 @@ public class TransferService {
         Account currentAccount = accountDao.getByUserId(userId);
         Account foreignAccount = accountDao.getByUserId(transferDto.getUserId());
 
+        if (currentAccount.getId() == foreignAccount.getId()){
+            throw new RuntimeException("It is not possible to send request to yourself");
+        }
+
         Transfer transfer = new Transfer();
         transfer.setAmount(transferDto.getAmount());
         transfer.setTypeId(transferDto.getTypeId());
