@@ -100,7 +100,9 @@ public class JdbcUserDao implements UserDao {
         try {
             SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
             while (results.next()) {
-                User user = mapRowToUser(results);
+                User user = new User();
+                user.setId(results.getInt("user_id"));
+                user.setUsername(results.getString("username"));
                 users.add(user);
             }
         } catch (CannotGetJdbcConnectionException e) {
