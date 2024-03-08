@@ -189,29 +189,75 @@ public void setAuthenticatedUser(AuthenticatedUser user) {
                 "\n" +
                 "Enter ID of user you are sending to (0 to cancel):\n");
         String sendTo = scanner.nextLine();
-        System.out.println("Enter amount:");
-        String amount = scanner.nextLine();
-        // check if valid string(BIG DEC)
-        // try { new BigDecemal(amount) }
-        transfer.setUserId(Integer.parseInt(sendTo));
-        transfer.setAmount(amount);
-        transfer.setTypeId(2);
+        if (Integer.parseInt(sendTo) > 0)
+        {
+            System.out.println("Enter amount:");
+            String amount = scanner.nextLine();
+            // check if valid string(BIG DEC)
+            // try { new BigDecemal(amount) }
+            transfer.setUserId(Integer.parseInt(sendTo));
+            transfer.setAmount(amount);
+            transfer.setTypeId(2);
 
-        HttpEntity<TransferDto> entity = makeTransferEntity(transfer);
+            HttpEntity<TransferDto> entity = makeTransferEntity(transfer);
 
-        Transfer newTransfer = new Transfer();
+            Transfer newTransfer = new Transfer();
 
-        try {
-            newTransfer  = restTemplate.postForObject(API_BASE_URL, entity, Transfer.class);
-            if (newTransfer != null) {
-                System.out.println(newTransfer.toString());
+            try {
+                newTransfer  = restTemplate.postForObject(API_BASE_URL, entity, Transfer.class);
+                if (newTransfer != null) {
+                    System.out.println(newTransfer.toString());
+                }
+                else {
+                    System.out.println("Your transfer was not successful.");
+                }
+
+            } catch (RestClientResponseException | ResourceAccessException e) {
+                BasicLogger.log(e.getMessage());
             }
-            else {
-                System.out.println("Your transfer was not successful.");
-            }
+        }
+        else {
+            System.out.println("Returning to main menu.");
+        }
 
-        } catch (RestClientResponseException | ResourceAccessException e) {
-            BasicLogger.log(e.getMessage());
+    }
+
+    public void requestBucks() {
+        TransferDto transfer = new TransferDto();
+        userService.getAllAccounts();
+        System.out.println("---------\n" +
+                "\n" +
+                "Enter ID of user you are requesting from (0 to cancel):\n");
+        String requestFrom = scanner.nextLine();
+        if (Integer.parseInt(requestFrom) > 0)
+        {
+            System.out.println("Enter amount:");
+            String amount = scanner.nextLine();
+            // check if valid string(BIG DEC)
+            // try { new BigDecemal(amount) }
+            transfer.setUserId(Integer.parseInt(requestFrom));
+            transfer.setAmount(amount);
+            transfer.setTypeId(1);
+
+            HttpEntity<TransferDto> entity = makeTransferEntity(transfer);
+
+            Transfer newTransfer = new Transfer();
+
+            try {
+                newTransfer  = restTemplate.postForObject(API_BASE_URL, entity, Transfer.class);
+                if (newTransfer != null) {
+                    System.out.println(newTransfer.toString());
+                }
+                else {
+                    System.out.println("Your request was not successful.");
+                }
+
+            } catch (RestClientResponseException | ResourceAccessException e) {
+                BasicLogger.log(e.getMessage());
+            }
+        }
+        else {
+            System.out.println("Returning to main menu.");
         }
     }
 
