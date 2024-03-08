@@ -33,11 +33,11 @@ public class Transfer {
                 "\n Transfer Details" +
                 "\n--------------------------------------------" +
                 "\n Id: " + id +
-                "\n Transfer Type:'" + typeId + '\'' +
+                "\n Transfer Type: " + typeId + '\'' +
                 "\n Transfer Status: " + statusId +
                 "\n From: " + fromAccount +
                 "\n To: " + toAccount +
-                "\n Amount:" + amount;
+                "\n Amount: $" + amount;
     }
 
     public int getId() {
