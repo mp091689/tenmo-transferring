@@ -23,10 +23,10 @@ public class AccountService {
     }
 
 
-    public BigDecimal getBalance(AuthenticatedUser auth){
+    public BigDecimal getBalance(){
         BigDecimal balance = BigDecimal.valueOf(0);
         try {
-            ResponseEntity<BigDecimal> response = restTemplate.exchange(API_BASE_URL + "balance/" + auth.getUser().getId(), HttpMethod.GET, makeAuthEntity(), BigDecimal.class);
+            ResponseEntity<BigDecimal> response = restTemplate.exchange(API_BASE_URL + "balance", HttpMethod.GET, makeAuthEntity(), BigDecimal.class);
             balance = response.getBody();
         }
         catch (RestClientResponseException | ResourceAccessException e) {

@@ -68,6 +68,8 @@ public class App {
         currentUser = authenticationService.login(credentials);
         if (currentUser == null) {
             consoleService.printErrorMessage();
+        } else {
+            accountService.setAuthToken(currentUser.getToken());
         }
     }
 
@@ -97,7 +99,7 @@ public class App {
 
 	private void viewCurrentBalance() {
         BigDecimal balance;
-        balance = accountService.getBalance(currentUser);
+        balance = accountService.getBalance();
         System.out.println("Your current account balance is: " + balance);
 	}
 
@@ -111,6 +113,7 @@ public class App {
 		List<Transfer> pendingList;
         pendingList = transferService.getPending();
         System.out.println(pendingList);
+
 		
 	}
 
