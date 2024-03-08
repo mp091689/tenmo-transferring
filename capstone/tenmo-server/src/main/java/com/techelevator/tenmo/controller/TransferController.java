@@ -63,7 +63,11 @@ public class TransferController {
     }
 
     @PutMapping("{id}")
-    public boolean approve(@PathVariable int id, @RequestBody TransferApproveDto transferApproveDto, Principal principal) {
-        return transferService.approve(id, transferApproveDto.getStatusId(), principal.getName());
+    public Transfer approve(@PathVariable int id, @RequestBody TransferApproveDto transferApproveDto, Principal principal) {
+        try {
+            return transferService.approve(id, transferApproveDto.getStatusId(), principal.getName());
+        } catch (RuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.toString());
+        }
     }
 }
