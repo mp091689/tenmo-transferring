@@ -105,9 +105,10 @@ public class App {
 	}
 
 	private void viewTransferHistory() {
-        Transfer[] transferList;
-        transferList = transferService.getAll();
-        System.out.println(Arrays.toString(transferList));
+//        Transfer[] transferList;
+//        transferList = transferService.getAll();
+//        System.out.println(Arrays.toString(transferList));
+        transferService.getAll();
         }
 
 	private void viewPendingRequests() {
