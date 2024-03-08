@@ -54,7 +54,7 @@ public class TransferService {
         Account foreignAccount = accountDao.getByUserId(transferDto.getUserId());
 
         if (currentAccount.getId() == foreignAccount.getId()){
-            throw new RuntimeException("It is not possible to send request to yourself");
+            throw new RuntimeException("It is not possible to send money to yourself");
         }
 
         Transfer transfer = new Transfer();
@@ -79,6 +79,12 @@ public class TransferService {
             transfer.setToAccount(currentAccount.getId());
         }
 
-        return transferDao.create(transfer, userId);
+        transfer = transferDao.create(transfer, userId);
+
+        if (transfer.getStatusId() == 3) {
+            throw new RuntimeException("Not enough money on your account");
+        }
+
+        return transfer;
     }
 }
