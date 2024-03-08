@@ -26,13 +26,21 @@ public class AccountService {
     public BigDecimal getBalance(){
         BigDecimal balance = BigDecimal.valueOf(0);
         try {
-            ResponseEntity<BigDecimal> response = restTemplate.exchange(API_BASE_URL + "balance", HttpMethod.GET, makeAuthEntity(), BigDecimal.class);
-            balance = response.getBody();
+            balance = getAccount().getBalance();
         }
         catch (RestClientResponseException | ResourceAccessException e) {
             BasicLogger.log(e.getMessage());
         }
         return balance;
+    }
+
+    public Account getAccount() {
+        try {
+            ResponseEntity<Account> response = restTemplate.exchange(API_BASE_URL + "accounts", HttpMethod.GET, makeAuthEntity(), Account.class);
+        } catch (RestClientResponseException | ResourceAccessException e) {
+            BasicLogger.log(e.getMessage());
+        }
+        return response.getBody();
     }
 
     private HttpEntity<Void> makeAuthEntity() {

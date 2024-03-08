@@ -111,9 +111,7 @@ public class App {
         }
 
 	private void viewPendingRequests() {
-		List<Transfer> pendingList;
-        pendingList = transferService.getPending();
-        System.out.println(pendingList);
+		transferService.getPending();
 	}
 
 	private void sendBucks() {
