@@ -115,7 +115,7 @@ public class App {
 	}
 
 	private void sendBucks() {
-		transferService.sendBucks();
+        transferService.sendBucks();
 	}
 
 	private void requestBucks() {

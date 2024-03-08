@@ -3,6 +3,7 @@ package com.techelevator.tenmo.services;
 import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.AuthenticatedUser;
 import com.techelevator.tenmo.model.Transfer;
+import com.techelevator.tenmo.model.TransferDto;
 import com.techelevator.util.BasicLogger;
 import org.springframework.http.*;
 import org.springframework.http.server.reactive.HttpHeadResponseDecorator;
@@ -14,10 +15,11 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.TreeMap;
 
 public class TransferService {
 
-public static final String API_BASE_URL = "http://localhost:8080/transfers/";
+public static final String API_BASE_URL = "http://localhost:8080/transfers";
 
 private RestTemplate restTemplate = new RestTemplate();
 private final Scanner scanner = new Scanner(System.in);
@@ -180,26 +182,37 @@ public void setAuthenticatedUser(AuthenticatedUser user) {
         }
     }
 
-    public Transfer sendBucks() {
-        Transfer transfer = new Transfer();
-        try
-        {
-            userService.getAllAccounts();
-            System.out.println("---------\n" +
-                    "\n" +
-                    "Enter ID of user you are sending to (0 to cancel):\n");
-            String sendTo = scanner.nextLine();
-            System.out.println("Enter amount:");
-            String amount = scanner.nextLine();
-            transfer.setToAccount(Integer.parseInt(sendTo));
-            transfer.setAmount(BigDecimal.valueOf(Long.parseLong(amount)));
-            transfer.setTypeId(2);
-        }
-        catch (RestClientResponseException | ResourceAccessException e)
-        {
+    public void sendBucks() {
+        TransferDto transfer = new TransferDto();
+        userService.getAllAccounts();
+        System.out.println("---------\n" +
+                "\n" +
+                "Enter ID of user you are sending to (0 to cancel):\n");
+        String sendTo = scanner.nextLine();
+        System.out.println("Enter amount:");
+        String amount = scanner.nextLine();
+        // check if valid string(BIG DEC)
+        // try { new BigDecemal(amount) }
+        transfer.setUserId(Integer.parseInt(sendTo));
+        transfer.setAmount(amount);
+        transfer.setTypeId(2);
+
+        HttpEntity<TransferDto> entity = makeTransferEntity(transfer);
+
+        Transfer newTransfer = new Transfer();
+
+        try {
+            newTransfer  = restTemplate.postForObject(API_BASE_URL, entity, Transfer.class);
+            if (newTransfer != null) {
+                System.out.println(newTransfer.toString());
+            }
+            else {
+                System.out.println("Your transfer was not successful.");
+            }
+
+        } catch (RestClientResponseException | ResourceAccessException e) {
             BasicLogger.log(e.getMessage());
         }
-        return transfer;
     }
 
 
@@ -210,7 +223,7 @@ public void setAuthenticatedUser(AuthenticatedUser user) {
         return new HttpEntity<>(headers);
     }
 
-    private HttpEntity<Transfer> makeTransferEntity(Transfer transfer){
+    private HttpEntity<TransferDto> makeTransferEntity(TransferDto transfer){
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
     headers.setBearerAuth(user.getToken());
