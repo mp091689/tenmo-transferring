@@ -64,18 +64,18 @@ public void setAuthenticatedUser(AuthenticatedUser user) {
 
                     if (currentAccountId != t.getFromAccount())
                     {
-                        type = "To :";
-                        name = String.valueOf(t.getToAccount());
+                        type = "From: ";
+                        name = String.valueOf(t.getFromAccount());
                     }
                     else
                     {
-                        type = "From: ";
+                        type = "To: ";
                         name = String.valueOf(t.getToAccount());
                     }
-                    System.out.println(t.getId() + "\t" + type + name + "\t" + t.getAmount());
+                    System.out.println(t.getId() + "\t\t" + type + name + "\t\t\t\t $" + t.getAmount());
                 }
                 System.out.println("---------\n" +
-                        "Please enter transfer ID to view details (0 to cancel): \"");
+                        "Please enter transfer ID to view details (0 to cancel): ");
                 String input = scanner.nextLine();
                 if (Integer.parseInt(input) != 0)
                 {
