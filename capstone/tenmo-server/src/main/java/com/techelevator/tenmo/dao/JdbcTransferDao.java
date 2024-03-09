@@ -80,4 +80,15 @@ public class JdbcTransferDao implements TransferDao {
             throw new DaoException("Data integrity violation", e);
         }
     }
+
+    // TODO get everything
+    // I will use this to improve the print out in client
+//    SELECT t.transfer_id, t.transfer_type_id, tt.transfer_type_desc, t.transfer_status_id, ts.transfer_status_desc, t.account_from, af.username AS from_username, t.account_to, ato.username AS to_username, t.amount
+//    FROM transfer AS t
+//    JOIN transfer_type AS tt ON t.transfer_type_id = tt.transfer_type_id
+//    JOIN transfer_status AS ts ON t.transfer_status_id = ts.transfer_status_id
+//    JOIN account AS afrom ON t.account_from = afrom.account_id
+//    JOIN tenmo_user AS af ON afrom.user_id = af.user_id
+//    JOIN account AS atoid ON t.account_to = atoid.account_id
+//    JOIN tenmo_user AS ato ON atoid.user_id = ato.user_id;
 }
