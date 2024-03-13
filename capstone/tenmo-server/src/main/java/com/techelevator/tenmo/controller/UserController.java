@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @PreAuthorize("isAuthenticated()")
-@RequestMapping("tenmo_user")
+@RequestMapping("users")
 public class UserController {
     private final UserDao userDao;
 
