@@ -12,14 +12,18 @@ import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
 public class UserService {
-    private static final String API_BASE_URL = "http://localhost:8080/";
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final String SERVICE_API_URL;
+    private final RestTemplate restTemplate;
     private AuthenticatedUser user;
+
+    public UserService(String baseUrl, RestTemplate restTemplate) {
+        this.SERVICE_API_URL = baseUrl + "/users";
+        this.restTemplate = restTemplate;
+    }
 
     public void setAuthenticatedUser(AuthenticatedUser user) {
         this.user = user;
     }
-
 
     public void getAllAccounts() {
         User[] accounts = new User[0];
@@ -28,7 +32,7 @@ public class UserService {
                     "Users\n" +
                     "ID          Name\n" +
                     "-------------------------------------------");
-            ResponseEntity<User[]> response = restTemplate.exchange(API_BASE_URL + "tenmo_user", HttpMethod.GET, makeAuthEntity(), User[].class);
+            ResponseEntity<User[]> response = restTemplate.exchange(SERVICE_API_URL, HttpMethod.GET, makeAuthEntity(), User[].class);
             accounts = response.getBody();
             if (accounts != null) {
                 for (User u : accounts) {

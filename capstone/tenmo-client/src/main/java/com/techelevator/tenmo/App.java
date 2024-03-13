@@ -4,6 +4,7 @@ import com.techelevator.tenmo.model.AuthenticatedUser;
 import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.UserCredentials;
 import com.techelevator.tenmo.services.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 import java.sql.SQLOutput;
@@ -12,14 +13,13 @@ import java.util.Arrays;
 import java.util.List;
 
 public class App {
-
-    private static final String API_BASE_URL = "http://localhost:8080/";
-
+    private final String API_BASE_URL = "http://localhost:8080";
+    private final RestTemplate restTemplate = new RestTemplate();
     private final ConsoleService consoleService = new ConsoleService();
-    private final AccountService accountService = new AccountService();
-    private final TransferService transferService = new TransferService();
-    private final UserService userService = new UserService();
-    private final AuthenticationService authenticationService = new AuthenticationService(API_BASE_URL);
+    private final UserService userService = new UserService(API_BASE_URL, restTemplate);
+    private final AccountService accountService = new AccountService(API_BASE_URL, restTemplate);
+    private final TransferService transferService = new TransferService(API_BASE_URL, restTemplate, accountService, userService);
+    private final AuthenticationService authenticationService = new AuthenticationService(API_BASE_URL, restTemplate);
 
     private AuthenticatedUser currentUser;
 
@@ -67,7 +67,7 @@ public class App {
         if (currentUser == null) {
             consoleService.printErrorMessage();
         } else {
-            accountService.setAuthToken(currentUser.getToken());
+            accountService.setAuthenticatedUser(currentUser);
             transferService.setAuthenticatedUser(currentUser);
             userService.setAuthenticatedUser(currentUser);
         }

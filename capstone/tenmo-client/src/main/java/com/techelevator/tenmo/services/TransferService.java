@@ -13,17 +13,22 @@ import java.util.Scanner;
 
 public class TransferService {
 
-    public static final String API_BASE_URL = "http://localhost:8080/transfers";
+    public final String SERVICE_API_URL;
     private final Scanner scanner = new Scanner(System.in);
-    private final UserService userService = new UserService();
-    private final AccountService accountService = new AccountService();
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final UserService userService;
+    private final AccountService accountService;
+    private final RestTemplate restTemplate;
     private AuthenticatedUser user;
+
+    public TransferService(String baseUrl, RestTemplate restTemplate, AccountService accountService, UserService userService) {
+        this.SERVICE_API_URL = baseUrl + "/transfers";
+        this.restTemplate = restTemplate;
+        this.accountService = accountService;
+        this.userService = userService;
+    }
 
     public void setAuthenticatedUser(AuthenticatedUser user) {
         this.user = user;
-        userService.setAuthenticatedUser(user);
-        accountService.setAuthToken(user.getToken());
     }
 
     public void getAll() {
@@ -35,7 +40,7 @@ public class TransferService {
                     "Transfers\n" +
                     "ID          From/To                 Amount\n" +
                     "-------------------------------------------");
-            ResponseEntity<Transfer[]> response = restTemplate.exchange(API_BASE_URL, HttpMethod.GET, makeAuthEntity(), Transfer[].class);
+            ResponseEntity<Transfer[]> response = restTemplate.exchange(SERVICE_API_URL, HttpMethod.GET, makeAuthEntity(), Transfer[].class);
             transferList = response.getBody();
             int currentAccountId = accountService.getAccount().getId();
             if (transferList != null && transferList.length > 0) {
@@ -91,7 +96,7 @@ public class TransferService {
                     "Pending Transfers\n" +
                     "ID          From/To                 Amount\n" +
                     "-------------------------------------------");
-            ResponseEntity<Transfer[]> response = restTemplate.exchange(API_BASE_URL + "/pending", HttpMethod.GET, makeAuthEntity(), Transfer[].class);
+            ResponseEntity<Transfer[]> response = restTemplate.exchange(SERVICE_API_URL + "/pending", HttpMethod.GET, makeAuthEntity(), Transfer[].class);
             transferList = response.getBody();
             if (transferList != null && transferList.length > 0) {
                 for (Transfer t : transferList) {
@@ -163,7 +168,7 @@ public class TransferService {
             Transfer newTransfer = new Transfer();
 
             try {
-                newTransfer = restTemplate.postForObject(API_BASE_URL, entity, Transfer.class);
+                newTransfer = restTemplate.postForObject(SERVICE_API_URL, entity, Transfer.class);
                 if (newTransfer != null) {
                     System.out.println(newTransfer.toString());
                 } else {
@@ -200,7 +205,7 @@ public class TransferService {
             Transfer newTransfer = new Transfer();
 
             try {
-                newTransfer = restTemplate.postForObject(API_BASE_URL, entity, Transfer.class);
+                newTransfer = restTemplate.postForObject(SERVICE_API_URL, entity, Transfer.class);
                 if (newTransfer != null) {
                     System.out.println(newTransfer.toString());
                 } else {
