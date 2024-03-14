@@ -7,18 +7,15 @@ import com.techelevator.tenmo.services.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
-import java.sql.SQLOutput;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class App {
     private final String API_BASE_URL = "http://localhost:8080";
     private final RestTemplate restTemplate = new RestTemplate();
-    private final ConsoleService consoleService = new ConsoleService();
-    private final UserService userService = new UserService(API_BASE_URL, restTemplate);
     private final AccountService accountService = new AccountService(API_BASE_URL, restTemplate);
-    private final TransferService transferService = new TransferService(API_BASE_URL, restTemplate, accountService, userService);
+    private final ConsoleService consoleService = new ConsoleService(accountService);
+    private final UserService userService = new UserService(API_BASE_URL, restTemplate);
+    private final TransferService transferService = new TransferService(API_BASE_URL, restTemplate, userService);
     private final AuthenticationService authenticationService = new AuthenticationService(API_BASE_URL, restTemplate);
 
     private AuthenticatedUser currentUser;
@@ -35,6 +32,7 @@ public class App {
             mainMenu();
         }
     }
+
     private void loginMenu() {
         int menuSelection = -1;
         while (menuSelection != 0 && currentUser == null) {
@@ -63,6 +61,7 @@ public class App {
 
     private void handleLogin() {
         UserCredentials credentials = consoleService.promptForCredentials();
+//        UserCredentials credentials = new UserCredentials("1", "1");
         currentUser = authenticationService.login(credentials);
         if (currentUser == null) {
             consoleService.printErrorMessage();
@@ -97,26 +96,40 @@ public class App {
         }
     }
 
-	private void viewCurrentBalance() {
+    private void viewCurrentBalance() {
         BigDecimal balance;
         balance = accountService.getBalance();
-        System.out.println("Your current account balance is: " + balance);
-	}
+        System.out.println("Your current account balance is: $" + balance);
+    }
 
-	private void viewTransferHistory() {
-        transferService.getAll();
+    private void viewTransferHistory() {
+        Transfer[] transfers = transferService.getAll();
+        consoleService.printTransfers(transfers);
+        Transfer transfer = null;
+        int selection = -1;
+        while (transfer == null && selection != 0) {
+            selection = consoleService.promptForInt("Please enter transfer ID to view details (0 to cancel): ");
+            int finalSelection = selection;
+            transfer = Arrays.stream(transfers).filter(t -> t.getId() == finalSelection).findFirst().orElse(null);
+            if (transfer == null) {
+                System.out.printf("Transfer id: %d is not found%n", selection);
+                continue;
+            }
+            consoleService.printTransfer(transfer);
         }
+        mainMenu();
+    }
 
-	private void viewPendingRequests() {
-		transferService.getPending();
-	}
+    private void viewPendingRequests() {
+        transferService.getPending();
+    }
 
-	private void sendBucks() {
+    private void sendBucks() {
         transferService.sendBucks();
-	}
+    }
 
-	private void requestBucks() {
-		transferService.requestBucks();
-	}
+    private void requestBucks() {
+        transferService.requestBucks();
+    }
 
 }

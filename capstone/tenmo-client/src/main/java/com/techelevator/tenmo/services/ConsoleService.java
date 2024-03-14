@@ -1,14 +1,20 @@
 package com.techelevator.tenmo.services;
 
 
+import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.UserCredentials;
 
 import java.math.BigDecimal;
 import java.util.Scanner;
 
-public class  ConsoleService {
-
+public class ConsoleService {
     private final Scanner scanner = new Scanner(System.in);
+    private final AccountService accountService;
+    private final int WIDTH = 40;
+
+    public ConsoleService(AccountService accountService) {
+        this.accountService = accountService;
+    }
 
     public int promptForMenuSelection(String prompt) {
         int menuSelection;
@@ -88,4 +94,31 @@ public class  ConsoleService {
         System.out.println("An error occurred. Check the log for details.");
     }
 
+    public void printTransfers(Transfer[] transfers) {
+        System.out.println("-".repeat(WIDTH));
+        System.out.println("Transfers");
+        System.out.printf("%s%19s%19s%n", "ID", "From/To", "Amount");
+        System.out.println("-".repeat(WIDTH));
+        for (Transfer transfer : transfers) {
+            int currentAccountId = accountService.getAccount().getId();
+            String direction = currentAccountId == transfer.getFromAccount()
+                    ? "To: " + transfer.getToAccount() : "From: " + transfer.getFromAccount();
+
+            System.out.printf("%4s%16s%12s%8.2f%n", transfer.getId(), direction, "$\t", transfer.getAmount());
+        }
+        System.out.println("-".repeat(9));
+    }
+
+    public void printTransfer(Transfer transfer) {
+        System.out.println("-".repeat(WIDTH));
+        System.out.println("Transfer Details");
+        System.out.println("-".repeat(WIDTH));
+        System.out.printf("%-8s%d%n", "ID:", transfer.getId());
+        System.out.printf("%-8s%s%n", "From:", transfer.getFromAccount());
+        System.out.printf("%-8s%s%n", "To:", transfer.getToAccount());
+        System.out.printf("%-8s%s%n", "Type:", transfer.getTypeId());
+        System.out.printf("%-8s%s%n", "Status:", transfer.getStatusId());
+        System.out.printf("%-8s$%.2f%n", "Amount:", transfer.getAmount());
+        pause();
+    }
 }

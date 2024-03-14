@@ -16,14 +16,12 @@ public class TransferService {
     public final String SERVICE_API_URL;
     private final Scanner scanner = new Scanner(System.in);
     private final UserService userService;
-    private final AccountService accountService;
     private final RestTemplate restTemplate;
     private AuthenticatedUser user;
 
-    public TransferService(String baseUrl, RestTemplate restTemplate, AccountService accountService, UserService userService) {
+    public TransferService(String baseUrl, RestTemplate restTemplate, UserService userService) {
         this.SERVICE_API_URL = baseUrl + "/transfers";
         this.restTemplate = restTemplate;
-        this.accountService = accountService;
         this.userService = userService;
     }
 
@@ -31,60 +29,14 @@ public class TransferService {
         this.user = user;
     }
 
-    public void getAll() {
-        Transfer[] transferList;
-        String type;
-        String name;
+    public Transfer[] getAll() {
         try {
-            System.out.println("-------------------------------------------\n" +
-                    "Transfers\n" +
-                    "ID          From/To                 Amount\n" +
-                    "-------------------------------------------");
             ResponseEntity<Transfer[]> response = restTemplate.exchange(SERVICE_API_URL, HttpMethod.GET, makeAuthEntity(), Transfer[].class);
-            transferList = response.getBody();
-            int currentAccountId = accountService.getAccount().getId();
-            if (transferList != null && transferList.length > 0) {
-                for (Transfer t : transferList) {
-
-                    if (currentAccountId != t.getFromAccount()) {
-                        type = "From: ";
-                        name = String.valueOf(t.getFromAccount());
-                    } else {
-                        type = "To: ";
-                        name = String.valueOf(t.getToAccount());
-                    }
-                    System.out.println(t.getId() + "\t\t" + type + name + "\t\t\t\t $" + t.getAmount());
-                }
-                System.out.println("---------\nPlease enter transfer ID to view details (0 to cancel): ");
-                String input = scanner.nextLine();
-                Integer goTo = null;
-
-                try {
-                    goTo = Integer.parseInt(input);
-                } catch (NumberFormatException e) {
-                    System.out.println("Please enter a valid ID");
-                }
-
-                if (goTo != null) {
-                    boolean found = false;
-                    for (Transfer t : transferList) {
-                        if (goTo.equals(t.getId())) {
-                            System.out.println("--------------------------------------------\n" +
-                                    "Transfer Details\n" +
-                                    "--------------------------------------------\n" + t);
-                            found = true;
-                        }
-                    }
-                    if (goTo != 0 && !found) {
-                        System.out.println("Please enter a valid ID");
-                    }
-                }
-            } else {
-                System.out.println("You have no transactions.");
-            }
+            return response.getBody();
         } catch (RestClientResponseException | ResourceAccessException e) {
             BasicLogger.log(e.getMessage());
         }
+        return null;
     }
 
     public void getPending() {
@@ -232,5 +184,4 @@ public class TransferService {
         headers.setBearerAuth(user.getToken());
         return new HttpEntity<>(transfer, headers);
     }
-
 }
