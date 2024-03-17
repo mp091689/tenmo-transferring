@@ -2,15 +2,22 @@ package com.techelevator.tenmo.services;
 
 
 import com.techelevator.tenmo.model.Transfer;
+import com.techelevator.tenmo.model.User;
 import com.techelevator.tenmo.model.UserCredentials;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Scanner;
 
 public class ConsoleService {
     private final Scanner scanner = new Scanner(System.in);
     private final AccountService accountService;
     private final int WIDTH = 40;
+
+    private final String COLOR_RESET = "\u001b[0m";
+    private final String COLOR_DANGER = "\u001b[31m";
+    private final String COLOR_WARNING = "\u001b[33m";
+    private final String COLOR_SUCCESS = "\u001b[32m";
 
     public ConsoleService(AccountService accountService) {
         this.accountService = accountService;
@@ -59,42 +66,42 @@ public class ConsoleService {
     }
 
     public String promptForString(String prompt) {
-        System.out.print(prompt);
+        printWarningLn(prompt);
         return scanner.nextLine();
     }
 
     public int promptForInt(String prompt) {
-        System.out.print(prompt);
+        printWarningLn(prompt);
         while (true) {
             try {
                 return Integer.parseInt(scanner.nextLine());
             } catch (NumberFormatException e) {
-                System.out.println("Please enter a number.");
+                printDangerLn("Please enter a number.");
             }
         }
     }
 
     public BigDecimal promptForBigDecimal(String prompt) {
-        System.out.print(prompt);
+        printWarningLn(prompt);
         while (true) {
             try {
                 return new BigDecimal(scanner.nextLine());
             } catch (NumberFormatException e) {
-                System.out.println("Please enter a decimal number.");
+                printDangerLn("Please enter a decimal number.");
             }
         }
     }
 
     public void pause() {
-        System.out.println("\nPress Enter to continue...");
+        printWarningLn("\nPress Enter to continue...");
         scanner.nextLine();
     }
 
     public void printErrorMessage() {
-        System.out.println("An error occurred. Check the log for details.");
+        printDangerLn("An error occurred. Check the log for details.");
     }
 
-    public void printTransfers(Transfer[] transfers) {
+    public void printTransfers(List<Transfer> transfers) {
         System.out.println("-".repeat(WIDTH));
         System.out.println("Transfers");
         System.out.printf("%s%19s%19s%n", "ID", "From/To", "Amount");
@@ -120,5 +127,28 @@ public class ConsoleService {
         System.out.printf("%-8s%s%n", "Status:", transfer.getStatusId());
         System.out.printf("%-8s$%.2f%n", "Amount:", transfer.getAmount());
         pause();
+    }
+
+    public void printUsers(List<User> users) {
+        System.out.println("-".repeat(WIDTH));
+        System.out.println("Users");
+        System.out.printf("%s%19s%n", "ID", "Name");
+        System.out.println("-".repeat(WIDTH));
+        for (User user : users) {
+            System.out.printf("%4s%16s%n", user.getId(), user.getUsername());
+        }
+        System.out.println("-".repeat(9));
+    }
+
+    public void printDangerLn(String msg) {
+        System.out.println(COLOR_DANGER + msg + COLOR_RESET);
+    }
+
+    public void printWarningLn(String msg) {
+        System.out.println(COLOR_WARNING + msg + COLOR_RESET);
+    }
+
+    public void printSuccessLn(String msg) {
+        System.out.println(COLOR_SUCCESS + msg + COLOR_RESET);
     }
 }

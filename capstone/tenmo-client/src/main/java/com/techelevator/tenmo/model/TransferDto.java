@@ -8,7 +8,7 @@ public class TransferDto {
 
     private int typeId;
 
-    private String amount;
+    private BigDecimal amount;
 
     public int getUserId() {
         return userId;
@@ -18,12 +18,14 @@ public class TransferDto {
         this.userId = userId;
     }
 
-    public String getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(String amount) {
-        this.amount = amount;
+    public void setAmount(BigDecimal amount) {
+        if (amount.compareTo(BigDecimal.ZERO) > 0) {
+            this.amount = amount;
+        }
     }
 
     public int getTypeId() {

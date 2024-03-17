@@ -7,7 +7,7 @@ import com.techelevator.tenmo.services.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
+import java.util.List;
 
 public class App {
     private final String API_BASE_URL = "http://localhost:8080";
@@ -15,9 +15,8 @@ public class App {
     private final AccountService accountService = new AccountService(API_BASE_URL, restTemplate);
     private final ConsoleService consoleService = new ConsoleService(accountService);
     private final UserService userService = new UserService(API_BASE_URL, restTemplate);
-    private final TransferService transferService = new TransferService(API_BASE_URL, restTemplate, userService);
+    private final TransferService transferService = new TransferService(API_BASE_URL, restTemplate);
     private final AuthenticationService authenticationService = new AuthenticationService(API_BASE_URL, restTemplate);
-
     private AuthenticatedUser currentUser;
 
     public static void main(String[] args) {
@@ -43,33 +42,33 @@ public class App {
             } else if (menuSelection == 2) {
                 handleLogin();
             } else if (menuSelection != 0) {
-                System.out.println("Invalid Selection");
+                consoleService.printDangerLn("Invalid Selection");
                 consoleService.pause();
             }
         }
     }
 
     private void handleRegister() {
-        System.out.println("Please register a new user account");
+        consoleService.printWarningLn("Please register a new user account");
         UserCredentials credentials = consoleService.promptForCredentials();
         if (authenticationService.register(credentials)) {
-            System.out.println("Registration successful. You can now login.");
-        } else {
-            consoleService.printErrorMessage();
+            consoleService.printSuccessLn("Registration successful. You can now login.");
+            return;
         }
+        consoleService.printErrorMessage();
     }
 
     private void handleLogin() {
         UserCredentials credentials = consoleService.promptForCredentials();
-//        UserCredentials credentials = new UserCredentials("1", "1");
         currentUser = authenticationService.login(credentials);
         if (currentUser == null) {
             consoleService.printErrorMessage();
-        } else {
-            accountService.setAuthenticatedUser(currentUser);
-            transferService.setAuthenticatedUser(currentUser);
-            userService.setAuthenticatedUser(currentUser);
+            return;
         }
+        accountService.setAuthenticatedUser(currentUser);
+        transferService.setAuthenticatedUser(currentUser);
+        userService.setAuthenticatedUser(currentUser);
+
     }
 
     private void mainMenu() {
@@ -90,7 +89,7 @@ public class App {
             } else if (menuSelection == 0) {
                 continue;
             } else {
-                System.out.println("Invalid Selection");
+                consoleService.printDangerLn("Invalid Selection");
             }
             consoleService.pause();
         }
@@ -99,37 +98,73 @@ public class App {
     private void viewCurrentBalance() {
         BigDecimal balance;
         balance = accountService.getBalance();
-        System.out.println("Your current account balance is: $" + balance);
+        consoleService.printSuccessLn("Your current account balance is: $" + balance);
+    }
+
+    private int viewTransferById() {
+        int selection = consoleService.promptForInt("Please enter transfer ID to view details (0 to cancel): ");
+        Transfer transfer = transferService.getById(selection);
+        if (transfer == null) {
+            consoleService.printDangerLn(String.format("Transfer id: %d is not found%n", selection));
+            return -1;
+        }
+        consoleService.printTransfer(transfer);
+        return selection;
     }
 
     private void viewTransferHistory() {
-        Transfer[] transfers = transferService.getAll();
+        List<Transfer> transfers = transferService.getAll();
         consoleService.printTransfers(transfers);
-        Transfer transfer = null;
-        int selection = -1;
-        while (transfer == null && selection != 0) {
-            selection = consoleService.promptForInt("Please enter transfer ID to view details (0 to cancel): ");
-            int finalSelection = selection;
-            transfer = Arrays.stream(transfers).filter(t -> t.getId() == finalSelection).findFirst().orElse(null);
-            if (transfer == null) {
-                System.out.printf("Transfer id: %d is not found%n", selection);
-                continue;
-            }
-            consoleService.printTransfer(transfer);
+        if (!transfers.isEmpty()) {
+            viewTransferById();
         }
         mainMenu();
     }
 
     private void viewPendingRequests() {
-        transferService.getPending();
+        List<Transfer> transfers = transferService.getPending();
+        consoleService.printTransfers(transfers);
+        if (!transfers.isEmpty()) {
+            int transferId = viewTransferById();
+            int selection = consoleService.promptForInt("Press 1 to approve or press 2 to reject (0 to cancel): ");
+            if (selection == 1) {
+                if (transferService.approveTransfer(transferId) == null) {
+                    consoleService.printDangerLn("Oops, something went wrong, transfer can't be approved.");
+                } else {
+                    consoleService.printSuccessLn("Approved :)");
+                }
+            } else if (selection == 2) {
+                if (transferService.declineTransfer(transferId) == null) {
+                    consoleService.printDangerLn("Oops, something went wrong, transfer can't be approved.");
+                } else {
+                    consoleService.printDangerLn("Rejected :(");
+                }
+            }
+        }
+        mainMenu();
     }
 
     private void sendBucks() {
-        transferService.sendBucks();
+        consoleService.printUsers(userService.getAllUsers());
+        int userId = consoleService.promptForInt("Enter ID of user you are sending to (0 to cancel): ");
+        BigDecimal amount = consoleService.promptForBigDecimal("Enter amount: ");
+        Transfer transfer = transferService.sendBucks(userId, amount);
+        if (transfer == null) {
+            consoleService.printDangerLn("Your request was not successful.");
+            return;
+        }
+        consoleService.printTransfer(transfer);
     }
 
     private void requestBucks() {
-        transferService.requestBucks();
+        consoleService.printUsers(userService.getAllUsers());
+        int userId = consoleService.promptForInt("Enter ID of user you are requesting from (0 to cancel): ");
+        BigDecimal amount = consoleService.promptForBigDecimal("Enter amount: ");
+        Transfer transfer = transferService.requestBucks(userId, amount);
+        if (transfer == null) {
+            consoleService.printDangerLn("Your request was not successful.");
+            return;
+        }
+        consoleService.printTransfer(transfer);
     }
-
 }
