@@ -14,21 +14,25 @@ import org.springframework.web.client.RestTemplate;
 import java.math.BigDecimal;
 
 public class AccountService {
-    private static final String API_BASE_URL = "http://localhost:8080/";
-    private final RestTemplate restTemplate = new RestTemplate();
-    private String authToken = null;
+    private final String SERVICE_API_URL;
+    private final RestTemplate restTemplate;
+    private AuthenticatedUser user;
 
-    public void setAuthToken(String authToken) {
-        this.authToken = authToken;
+    public AccountService(String baseUrl, RestTemplate restTemplate) {
+        SERVICE_API_URL = baseUrl + "/accounts";
+        this.restTemplate = restTemplate;
+    }
+
+    public void setAuthenticatedUser(AuthenticatedUser user) {
+        this.user = user;
     }
 
 
-    public BigDecimal getBalance(){
+    public BigDecimal getBalance() {
         BigDecimal balance = BigDecimal.valueOf(0);
         try {
             balance = getAccount().getBalance();
-        }
-        catch (RestClientResponseException | ResourceAccessException e) {
+        } catch (RestClientResponseException | ResourceAccessException e) {
             BasicLogger.log(e.getMessage());
         }
         return balance;
@@ -37,7 +41,7 @@ public class AccountService {
     public Account getAccount() {
         Account account = null;
         try {
-            ResponseEntity<Account> response = restTemplate.exchange(API_BASE_URL + "accounts", HttpMethod.GET, makeAuthEntity(), Account.class);
+            ResponseEntity<Account> response = restTemplate.exchange(SERVICE_API_URL, HttpMethod.GET, makeAuthEntity(), Account.class);
             account = response.getBody();
         } catch (RestClientResponseException | ResourceAccessException e) {
             BasicLogger.log(e.getMessage());
@@ -47,7 +51,7 @@ public class AccountService {
 
     private HttpEntity<Void> makeAuthEntity() {
         HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(authToken);
+        headers.setBearerAuth(user.getToken());
         return new HttpEntity<>(headers);
     }
 

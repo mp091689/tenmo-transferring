@@ -12,6 +12,9 @@ import java.math.BigDecimal;
 
 @Component
 public class JdbcAccountDao implements AccountDao {
+    private final String SELECT_QUERY = "SELECT a.account_id, a.balance, u.user_id, u.username " +
+            "FROM account a " +
+            "JOIN tenmo_user u ON u.user_id = a.user_id ";
     private final JdbcTemplate jdbcTemplate;
 
     public JdbcAccountDao(JdbcTemplate jdbcTemplate) {
@@ -39,7 +42,7 @@ public class JdbcAccountDao implements AccountDao {
 
     @Override
     public Account getById(int id) {
-        String sql = "SELECT account_id, user_id, balance FROM account WHERE account_id = ?";
+        String sql = SELECT_QUERY + " WHERE a.account_id = ?";
         try {
             return jdbcTemplate.queryForObject(sql, new Account(), id);
         } catch (CannotGetJdbcConnectionException e) {
@@ -49,7 +52,7 @@ public class JdbcAccountDao implements AccountDao {
 
     @Override
     public Account getByUserId(int userId) {
-        String sql = "SELECT account_id, user_id, balance FROM account WHERE user_id = ?";
+        String sql = SELECT_QUERY + " WHERE a.user_id = ?";
         try {
             return jdbcTemplate.queryForObject(sql, new Account(), userId);
         } catch (CannotGetJdbcConnectionException e) {

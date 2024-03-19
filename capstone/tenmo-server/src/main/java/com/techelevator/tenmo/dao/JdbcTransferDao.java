@@ -12,7 +12,25 @@ import java.util.List;
 
 @Component
 public class JdbcTransferDao implements TransferDao {
-    private final String TRANSFER_SELECT = "SELECT t.transfer_id, t.transfer_type_id, t.transfer_status_id, t.account_from, t.account_to, t.amount FROM transfer AS t ";
+    private final String SELECT_QUERY = "SELECT t.transfer_id, " +
+            "       t.transfer_type_id, " +
+            "       t.transfer_status_id, " +
+            "       t.account_from, " +
+            "       t.account_to, " +
+            "       t.amount, " +
+            "       from_a.account_id from_account_id, " +
+            "       from_a.balance from_balance, " +
+            "       from_u.user_id from_user_id, " +
+            "       from_u.username from_username, " +
+            "       to_a.account_id to_account_id, " +
+            "       to_a.balance to_balance, " +
+            "       to_u.user_id to_user_id, " +
+            "       to_u.username to_username " +
+            "FROM transfer t " +
+            "         JOIN account from_a ON t.account_from = from_a.account_id" +
+            "         JOIN account to_a ON t.account_to = to_a.account_id" +
+            "         JOIN tenmo_user from_u ON from_a.user_id = from_u.user_id" +
+            "         JOIN tenmo_user to_u ON to_a.user_id = to_u.user_id";
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -22,7 +40,7 @@ public class JdbcTransferDao implements TransferDao {
 
     @Override
     public List<Transfer> getAll(int userId) {
-        String sql = TRANSFER_SELECT + "WHERE t.account_from IN (SELECT account_id FROM account WHERE user_id = ?) OR t.account_to IN (SELECT account_id FROM account WHERE user_id = ?)";
+        String sql = SELECT_QUERY + " WHERE t.account_from IN (SELECT account_id FROM account WHERE user_id = ?) OR t.account_to IN (SELECT account_id FROM account WHERE user_id = ?)";
         try {
             return jdbcTemplate.query(sql, new Transfer(), userId, userId);
         } catch (CannotGetJdbcConnectionException e) {
@@ -32,7 +50,7 @@ public class JdbcTransferDao implements TransferDao {
 
     @Override
     public Transfer getById(int id) {
-        String sql = TRANSFER_SELECT + "WHERE t.transfer_id = ?";
+        String sql = SELECT_QUERY + " WHERE t.transfer_id = ?";
         try {
             return jdbcTemplate.queryForObject(sql, new Transfer(), id);
         } catch (CannotGetJdbcConnectionException e) {
@@ -42,10 +60,11 @@ public class JdbcTransferDao implements TransferDao {
 
     @Override
     public Transfer create(Transfer transfer, int userId) {
-        String sql = "INSERT INTO transfer (transfer_type_id, transfer_status_id, account_from, account_to, amount) VALUES (?, ?, ?, ?, ?) RETURNING *";
-        Object[] args = {transfer.getTypeId(), transfer.getStatusId(), transfer.getFromAccount(), transfer.getToAccount(), transfer.getAmount()};
+        String sql = "INSERT INTO transfer (transfer_type_id, transfer_status_id, account_from, account_to, amount) VALUES (?, ?, ?, ?, ?) RETURNING transfer_id";
+        Object[] args = {transfer.getType().id, transfer.getStatus().id, transfer.getFromAccount().getId(), transfer.getToAccount().getId(), transfer.getAmount()};
         try {
-            return jdbcTemplate.queryForObject(sql, new Transfer(), args);
+            int transferId = jdbcTemplate.queryForObject(sql, int.class, args);
+            return getById(transferId);
         } catch (CannotGetJdbcConnectionException e) {
             throw new DaoException("Unable to connect to server or database", e);
         } catch (DataIntegrityViolationException e) {
@@ -55,7 +74,7 @@ public class JdbcTransferDao implements TransferDao {
 
     @Override
     public List<Transfer> getAllPending(int userId) {
-        String sql = TRANSFER_SELECT + "WHERE (t.account_from IN (SELECT account_id FROM account WHERE user_id = ?) OR t.account_to IN (SELECT account_id FROM account WHERE user_id = ?)) AND transfer_status_id = 1";
+        String sql = SELECT_QUERY + " WHERE (t.account_from IN (SELECT account_id FROM account WHERE user_id = ?) OR t.account_to IN (SELECT account_id FROM account WHERE user_id = ?)) AND transfer_status_id = 1";
         try {
             return jdbcTemplate.query(sql, new Transfer(), userId, userId);
         } catch (CannotGetJdbcConnectionException e) {
@@ -72,7 +91,7 @@ public class JdbcTransferDao implements TransferDao {
                     "AND t.transfer_status_id = 1 " +
                     "AND t.transfer_id = ? " +
                     "AND t.account_to = ?";
-            jdbcTemplate.update(sql, transfer.getStatusId(), transfer.getId(), transfer.getToAccount());
+            jdbcTemplate.update(sql, transfer.getStatus().id, transfer.getId(), transfer.getToAccount().getId());
             return getById(transfer.getId());
         } catch (CannotGetJdbcConnectionException e) {
             throw new DaoException("Cannot connect to database.", e);

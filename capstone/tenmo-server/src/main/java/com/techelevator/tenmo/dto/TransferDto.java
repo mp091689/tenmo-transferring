@@ -1,4 +1,6 @@
-package com.techelevator.tenmo.model;
+package com.techelevator.tenmo.dto;
+
+import com.techelevator.tenmo.model.TransferType;
 
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Digits;
@@ -10,8 +12,7 @@ public class TransferDto {
     @Min(value = 0L)
     private int userId;
 
-    @Min(value = 0L)
-    private int typeId;
+    private TransferType type;
 
     @DecimalMin(value = "0.0", inclusive = false)
     @Digits(integer=13, fraction=2)
@@ -33,11 +34,11 @@ public class TransferDto {
         this.amount = amount;
     }
 
-    public int getTypeId() {
-        return typeId;
+    public TransferType getType() {
+        return type;
     }
 
-    public void setTypeId(int typeId) {
-        this.typeId = typeId;
+    public void setTypeId(TransferType type) {
+        this.type = type;
     }
 }

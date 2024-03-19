@@ -8,15 +8,15 @@ import java.sql.SQLException;
 
 public class Account implements RowMapper<Account> {
     private int id;
-    private int userId;
+    private User user;
     private BigDecimal balance;
 
     public Account() {
     }
 
-    public Account(int id, int userId, BigDecimal balance) {
+    public Account(int id, User user, BigDecimal balance) {
         this.id = id;
-        this.userId = userId;
+        this.user = user;
         this.balance = balance;
     }
 
@@ -28,12 +28,12 @@ public class Account implements RowMapper<Account> {
         this.id = id;
     }
 
-    public int getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public BigDecimal getBalance() {
@@ -56,9 +56,13 @@ public class Account implements RowMapper<Account> {
 
     @Override
     public Account mapRow(ResultSet resultSet, int i) throws SQLException {
+        User user = new User();
+        user.setId(resultSet.getInt("user_id"));
+        user.setUsername(resultSet.getString("username"));
+
         return new Account(
                 resultSet.getInt("account_id"),
-                resultSet.getInt("user_id"),
+                user,
                 resultSet.getBigDecimal("balance")
         );
     }

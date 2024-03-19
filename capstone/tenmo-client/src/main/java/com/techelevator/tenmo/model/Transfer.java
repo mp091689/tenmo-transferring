@@ -4,16 +4,16 @@ import java.math.BigDecimal;
 
 public class Transfer {
     private int id;
-    private int typeId;
-    private int statusId;
-    private int fromAccount;
-    private int toAccount;
+    private TransferType type;
+    private TransferStatus status;
+    private Account fromAccount;
+    private Account toAccount;
     private BigDecimal amount;
 
-    public Transfer(int id, int typeId, int statusId, int fromAccount, int toAccount, BigDecimal amount) {
+    public Transfer(int id, TransferType type, TransferStatus status, Account fromAccount, Account toAccount, BigDecimal amount) {
         this.id = id;
-        this.typeId = typeId;
-        this.statusId = statusId;
+        this.type = type;
+        this.status = status;
         this.fromAccount = fromAccount;
         this.toAccount = toAccount;
         this.amount = amount;
@@ -21,19 +21,6 @@ public class Transfer {
 
     public Transfer() {
 
-    }
-
-    @Override
-    public String toString() {
-        return "\n--------------------------------------------" +
-                "\n Transfer Details" +
-                "\n--------------------------------------------" +
-                "\n Id: " + id +
-                "\n Transfer Type: " + typeId +
-                "\n Transfer Status: " + statusId +
-                "\n From: " + fromAccount +
-                "\n To: " + toAccount +
-                "\n Amount: $" + amount;
     }
 
     public int getId() {
@@ -44,35 +31,35 @@ public class Transfer {
         this.id = id;
     }
 
-    public int getTypeId() {
-        return typeId;
+    public TransferType getType() {
+        return type;
     }
 
-    public void setTypeId(int typeId) {
-        this.typeId = typeId;
+    public void setType(TransferType type) {
+        this.type = type;
     }
 
-    public int getStatusId() {
-        return statusId;
+    public TransferStatus getStatus() {
+        return status;
     }
 
-    public void setStatusId(int statusId) {
-        this.statusId = statusId;
+    public void setStatus(TransferStatus status) {
+        this.status = status;
     }
 
-    public int getFromAccount() {
+    public Account getFromAccount() {
         return fromAccount;
     }
 
-    public void setFromAccount(int fromAccount) {
+    public void setFromAccount(Account fromAccount) {
         this.fromAccount = fromAccount;
     }
 
-    public int getToAccount() {
+    public Account getToAccount() {
         return toAccount;
     }
 
-    public void setToAccount(int toAccount) {
+    public void setToAccount(Account toAccount) {
         this.toAccount = toAccount;
     }
 
