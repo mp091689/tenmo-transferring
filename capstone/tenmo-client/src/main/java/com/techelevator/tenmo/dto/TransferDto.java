@@ -1,4 +1,6 @@
-package com.techelevator.tenmo.model;
+package com.techelevator.tenmo.dto;
+
+import com.techelevator.tenmo.model.TransferType;
 
 import java.math.BigDecimal;
 
@@ -6,7 +8,7 @@ public class TransferDto {
 
     private int userId;
 
-    private int typeId;
+    private TransferType type;
 
     private BigDecimal amount;
 
@@ -28,11 +30,11 @@ public class TransferDto {
         }
     }
 
-    public int getTypeId() {
-        return typeId;
+    public TransferType getType() {
+        return type;
     }
 
-    public void setTypeId(int typeId) {
-        this.typeId = typeId;
+    public void setType(TransferType type) {
+        this.type = type;
     }
 }

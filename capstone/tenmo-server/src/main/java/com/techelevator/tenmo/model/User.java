@@ -19,6 +19,11 @@ public class User {
 
    public User() { }
 
+   public User(int id, String username) {
+      this.id = id;
+      this.username = username;
+   }
+
    public User(int id, String username, String password, String authorities) {
       this.id = id;
       this.username = username;
@@ -89,15 +94,5 @@ public class User {
    @Override
    public int hashCode() {
       return Objects.hash(id, username, password, activated, authorities);
-   }
-
-   @Override
-   public String toString() {
-      return "User{" +
-              "id=" + id +
-              ", username='" + username + '\'' +
-              ", activated=" + activated +
-              ", authorities=" + authorities +
-              '}';
    }
 }

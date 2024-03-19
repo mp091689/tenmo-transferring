@@ -103,6 +103,9 @@ public class App {
 
     private int viewTransferById() {
         int selection = consoleService.promptForInt("Please enter transfer ID to view details (0 to cancel): ");
+        if (selection == 0) {
+            return -1;
+        }
         Transfer transfer = transferService.getById(selection);
         if (transfer == null) {
             consoleService.printDangerLn(String.format("Transfer id: %d is not found%n", selection));
@@ -118,7 +121,6 @@ public class App {
         if (!transfers.isEmpty()) {
             viewTransferById();
         }
-        mainMenu();
     }
 
     private void viewPendingRequests() {
@@ -126,7 +128,15 @@ public class App {
         consoleService.printTransfers(transfers);
         if (!transfers.isEmpty()) {
             int transferId = viewTransferById();
+            if (transferId == -1) {
+                return;
+            }
+
             int selection = consoleService.promptForInt("Press 1 to approve or press 2 to reject (0 to cancel): ");
+            if (selection == 0) {
+                return;
+            }
+
             if (selection == 1) {
                 if (transferService.approveTransfer(transferId) == null) {
                     consoleService.printDangerLn("Oops, something went wrong, transfer can't be approved.");
@@ -141,12 +151,14 @@ public class App {
                 }
             }
         }
-        mainMenu();
     }
 
     private void sendBucks() {
         consoleService.printUsers(userService.getAllUsers());
         int userId = consoleService.promptForInt("Enter ID of user you are sending to (0 to cancel): ");
+        if (userId == 0) {
+            return;
+        }
         BigDecimal amount = consoleService.promptForBigDecimal("Enter amount: ");
         Transfer transfer = transferService.sendBucks(userId, amount);
         if (transfer == null) {
@@ -159,6 +171,9 @@ public class App {
     private void requestBucks() {
         consoleService.printUsers(userService.getAllUsers());
         int userId = consoleService.promptForInt("Enter ID of user you are requesting from (0 to cancel): ");
+        if (userId == 0) {
+            return;
+        }
         BigDecimal amount = consoleService.promptForBigDecimal("Enter amount: ");
         Transfer transfer = transferService.requestBucks(userId, amount);
         if (transfer == null) {

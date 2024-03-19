@@ -3,10 +3,8 @@ package com.techelevator.tenmo.services;
 import com.techelevator.tenmo.dao.AccountDao;
 import com.techelevator.tenmo.dao.TransferDao;
 import com.techelevator.tenmo.dao.UserDao;
-import com.techelevator.tenmo.model.Account;
-import com.techelevator.tenmo.model.Transfer;
-import com.techelevator.tenmo.model.TransferDto;
-import com.techelevator.tenmo.model.User;
+import com.techelevator.tenmo.model.*;
+import com.techelevator.tenmo.dto.TransferDto;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -24,14 +22,14 @@ public class TransferService {
     public Transfer approve(int transferId, int statusId, String userName) {
         User user = userDao.getUserByUsername(userName);
         Transfer transfer = transferDao.getById(transferId);
-        Account accountFrom = accountDao.getById(transfer.getFromAccount());
+        Account accountFrom = accountDao.getById(transfer.getFromAccount().getId());
 
-        Account accountTo = accountDao.getById(transfer.getToAccount());
-        if (accountTo.getUserId() == user.getId()){
+        Account accountTo = accountDao.getById(transfer.getToAccount().getId());
+        if (accountTo.getUser().getId() == user.getId()){
             throw new RuntimeException("It is not possible to approve/decline transfer requested by you");
         }
 
-        if (transfer.getStatusId() != 1) {
+        if (transfer.getStatus() != TransferStatus.PENDING) {
             throw new RuntimeException("The Transfer is already approved/declined");
         }
 
@@ -45,7 +43,7 @@ public class TransferService {
         accountFrom.withdraw(transfer.getAmount());
         accountDao.update(accountFrom);
 
-        transfer.setStatusId(statusId);
+        transfer.setStatus(TransferStatus.get(statusId));
         return transferDao.update(transfer);
     }
 
@@ -59,29 +57,29 @@ public class TransferService {
 
         Transfer transfer = new Transfer();
         transfer.setAmount(transferDto.getAmount());
-        transfer.setTypeId(transferDto.getTypeId());
-        transfer.setStatusId(1);
+        transfer.setType(transferDto.getType());
+        transfer.setStatus(TransferStatus.get(1));
 
-        if (transferDto.getTypeId() == 2) { // sending
-            transfer.setFromAccount(currentAccount.getId());
-            transfer.setToAccount(foreignAccount.getId());
+        if (transferDto.getType() == TransferType.SEND) { // sending
+            transfer.setFromAccount(currentAccount);
+            transfer.setToAccount(foreignAccount);
             if (currentAccount.getBalance().compareTo(transfer.getAmount()) >= 0) {
                 foreignAccount.deposit(transfer.getAmount());
                 accountDao.update(foreignAccount);
                 currentAccount.withdraw(transfer.getAmount());
                 accountDao.update(currentAccount);
-                transfer.setStatusId(2);
+                transfer.setStatus(TransferStatus.get(2));
             } else {
-                transfer.setStatusId(3);
+                transfer.setStatus(TransferStatus.get(3));
             }
         } else { // requesting
-            transfer.setFromAccount(foreignAccount.getId());
-            transfer.setToAccount(currentAccount.getId());
+            transfer.setFromAccount(foreignAccount);
+            transfer.setToAccount(currentAccount);
         }
 
         transfer = transferDao.create(transfer, userId);
 
-        if (transfer.getStatusId() == 3) {
+        if (transfer.getStatus() == TransferStatus.DECLINED) {
             throw new RuntimeException("Not enough money on your account");
         }
 

@@ -108,8 +108,9 @@ public class ConsoleService {
         System.out.println("-".repeat(WIDTH));
         for (Transfer transfer : transfers) {
             int currentAccountId = accountService.getAccount().getId();
-            String direction = currentAccountId == transfer.getFromAccount()
-                    ? "To: " + transfer.getToAccount() : "From: " + transfer.getFromAccount();
+            String direction = currentAccountId == transfer.getFromAccount().getId()
+                    ? "To: " + transfer.getToAccount().getUser().getUsername()
+                    : "From: " + transfer.getFromAccount().getUser().getUsername();
 
             System.out.printf("%4s%16s%12s%8.2f%n", transfer.getId(), direction, "$\t", transfer.getAmount());
         }
@@ -121,12 +122,11 @@ public class ConsoleService {
         System.out.println("Transfer Details");
         System.out.println("-".repeat(WIDTH));
         System.out.printf("%-8s%d%n", "ID:", transfer.getId());
-        System.out.printf("%-8s%s%n", "From:", transfer.getFromAccount());
-        System.out.printf("%-8s%s%n", "To:", transfer.getToAccount());
-        System.out.printf("%-8s%s%n", "Type:", transfer.getTypeId());
-        System.out.printf("%-8s%s%n", "Status:", transfer.getStatusId());
+        System.out.printf("%-8s%s%n", "From:", transfer.getFromAccount().getUser().getUsername());
+        System.out.printf("%-8s%s%n", "To:", transfer.getToAccount().getUser().getUsername());
+        System.out.printf("%-8s%s%n", "Type:", transfer.getType());
+        System.out.printf("%-8s%s%n", "Status:", transfer.getStatus());
         System.out.printf("%-8s$%.2f%n", "Amount:", transfer.getAmount());
-        pause();
     }
 
     public void printUsers(List<User> users) {

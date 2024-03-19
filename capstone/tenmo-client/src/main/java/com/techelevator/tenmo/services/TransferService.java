@@ -1,9 +1,11 @@
 package com.techelevator.tenmo.services;
 
+import com.techelevator.tenmo.dto.TransferDto;
+import com.techelevator.tenmo.dto.TransferStatusDto;
 import com.techelevator.tenmo.model.AuthenticatedUser;
 import com.techelevator.tenmo.model.Transfer;
-import com.techelevator.tenmo.model.TransferStatusDto;
-import com.techelevator.tenmo.model.TransferDto;
+import com.techelevator.tenmo.model.TransferStatus;
+import com.techelevator.tenmo.model.TransferType;
 import com.techelevator.util.BasicLogger;
 import org.springframework.http.*;
 import org.springframework.web.client.ResourceAccessException;
@@ -49,29 +51,29 @@ public class TransferService {
     }
 
     public Transfer sendBucks(int receiverId, BigDecimal amount) {
-        return createTransfer(2, receiverId, amount);
+        return createTransfer(TransferType.SEND, receiverId, amount);
     }
 
     public Transfer requestBucks(int receiverId, BigDecimal amount) {
-        return createTransfer(1, receiverId, amount);
+        return createTransfer(TransferType.REQUEST, receiverId, amount);
     }
 
     public Transfer approveTransfer(int transferId) {
-        return touchTransferStatus(2, transferId);
+        return touchTransferStatus(TransferStatus.APPROVED, transferId);
     }
 
     public Transfer declineTransfer(int transferId) {
-        return touchTransferStatus(3, transferId);
+        return touchTransferStatus(TransferStatus.DECLINED, transferId);
     }
 
-    private Transfer touchTransferStatus(int statusId, int transferId) {
+    private Transfer touchTransferStatus(TransferStatus status, int transferId) {
         Transfer transfer = getById(transferId);
-        if (transfer == null || transfer.getStatusId() != 1) {
+        if (transfer == null || transfer.getStatus() != TransferStatus.PENDING) {
             return null;
         }
 
         TransferStatusDto transferApproveDto = new TransferStatusDto();
-        transferApproveDto.setStatusId(statusId);
+        transferApproveDto.setStatus(status);
 
         String resourceUrl = SERVICE_API_URL + "/" + transfer.getId();
         HttpEntity<TransferStatusDto> entity = makeTransferEntity(transferApproveDto);
@@ -85,11 +87,11 @@ public class TransferService {
         return null;
     }
 
-    private Transfer createTransfer(int typeId, int receiverId, BigDecimal amount) {
+    private Transfer createTransfer(TransferType type, int receiverId, BigDecimal amount) {
         TransferDto transfer = new TransferDto();
         transfer.setUserId(receiverId);
         transfer.setAmount(amount);
-        transfer.setTypeId(typeId);
+        transfer.setType(type);
 
         try {
             return restTemplate.postForObject(SERVICE_API_URL, makeTransferEntity(transfer), Transfer.class);
